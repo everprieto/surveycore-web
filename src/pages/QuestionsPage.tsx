@@ -7,13 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { questionsApi } from '../api/questions';
 import { StatusBadge } from '../components/StatusBadge';
 import { PageWrapper } from '../components/PageWrapper';
-import type { QuestionDetail } from '../types';
+import type { Question } from '../types';
 
 export function QuestionsPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
 
-  const { data: questions, isLoading, error } = useQuery<QuestionDetail[]>({
+  const { data: questions, isLoading, error } = useQuery<Question[]>({
     queryKey: ['questions'],
     queryFn: questionsApi.getAll,
   });
@@ -69,8 +69,8 @@ export function QuestionsPage() {
                   <TableCell sx={{ fontWeight: 600 }}>{q.logical_code}</TableCell>
                   <TableCell><StatusBadge status={q.answer_type} /></TableCell>
                   <TableCell><StatusBadge status={q.status} /></TableCell>
-                  <TableCell>{q.translations?.length ?? '—'}</TableCell>
-                  <TableCell>{q.options?.length ?? '—'}</TableCell>
+                  <TableCell>{(q as Partial<{ translations: unknown[]; options: unknown[] }>).translations?.length ?? '—'}</TableCell>
+                  <TableCell>{(q as Partial<{ translations: unknown[]; options: unknown[] }>).options?.length ?? '—'}</TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                       <Button
