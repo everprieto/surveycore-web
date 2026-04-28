@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon, Save as SaveIcon, Lock as LockIcon } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { adminApi } from '../../api/admin';
 import { PageWrapper } from '../../components/PageWrapper';
 import { roleColor } from '../../constants/roles';
@@ -38,7 +39,7 @@ function RolesCrud() {
       setToast(`Role '${r.role_name}' created`);
       setCreateOpen(false); setNewName(''); setNewDesc('');
     },
-    onError: (e: any) => setErrorMsg(e?.response?.data?.detail ?? 'Failed to create role'),
+    onError: (e: Error) => setErrorMsg((e as AxiosError<{ detail: string }>)?.response?.data?.detail ?? 'Failed to create role'),
   });
 
   const updateMutation = useMutation({
@@ -51,7 +52,7 @@ function RolesCrud() {
       setToast(`Role '${r.role_name}' updated`);
       setEditRole(null);
     },
-    onError: (e: any) => setErrorMsg(e?.response?.data?.detail ?? 'Failed to update role'),
+    onError: (e: Error) => setErrorMsg((e as AxiosError<{ detail: string }>)?.response?.data?.detail ?? 'Failed to update role'),
   });
 
   const deleteMutation = useMutation({
@@ -61,8 +62,8 @@ function RolesCrud() {
       setToast('Role deleted');
       setDeleteTarget(null);
     },
-    onError: (e: any) => {
-      setErrorMsg(e?.response?.data?.detail ?? 'Failed to delete role');
+    onError: (e: Error) => {
+      setErrorMsg((e as AxiosError<{ detail: string }>)?.response?.data?.detail ?? 'Failed to delete role');
       setDeleteTarget(null);
     },
   });
@@ -232,13 +233,17 @@ function PermissionsTab() {
       qc.invalidateQueries({ queryKey: ['admin-roles'] });
       setToast('Permissions saved successfully');
     },
-    onError: (e: any) => setErrorMsg(e?.response?.data?.detail ?? 'Failed to save permissions'),
+    onError: (e: Error) => setErrorMsg((e as AxiosError<{ detail: string }>)?.response?.data?.detail ?? 'Failed to save permissions'),
   });
 
   const toggle = (code: string) => {
     setLocalPerms((prev) => {
       const next = new Set(prev);
-      next.has(code) ? next.delete(code) : next.add(code);
+      if (next.has(code)) {
+        next.delete(code);
+      } else {
+        next.add(code);
+      }
       return next;
     });
   };

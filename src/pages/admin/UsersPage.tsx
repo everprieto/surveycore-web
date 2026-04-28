@@ -9,6 +9,7 @@ import {
 import { Delete as DeleteIcon, Add as AddIcon, Edit as EditIcon, Save as SaveIcon, Visibility as ViewAsIcon } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { AxiosError } from 'axios';
 import { adminApi } from '../../api/admin';
 import { PageWrapper } from '../../components/PageWrapper';
 import { useAuthStore } from '../../store/authStore';
@@ -156,7 +157,7 @@ function AssignmentsTab() {
       setCreateOpen(false);
       setNewUserId(null); setNewProject(''); setNewStart(''); setNewEnd('');
     },
-    onError: (e: any) => setErrorMsg(e?.response?.data?.detail ?? 'Failed to create assignment'),
+    onError: (e: Error) => setErrorMsg((e as AxiosError<{ detail: string }>)?.response?.data?.detail ?? 'Failed to create assignment'),
   });
 
   const updateMutation = useMutation({
@@ -166,7 +167,7 @@ function AssignmentsTab() {
       setToast('Assignment updated');
       setEditTarget(null);
     },
-    onError: (e: any) => setErrorMsg(e?.response?.data?.detail ?? 'Failed to update assignment'),
+    onError: (e: Error) => setErrorMsg((e as AxiosError<{ detail: string }>)?.response?.data?.detail ?? 'Failed to update assignment'),
   });
 
   const deleteMutation = useMutation({
@@ -176,7 +177,7 @@ function AssignmentsTab() {
       setToast('Assignment removed');
       setDeleteTarget(null);
     },
-    onError: (e: any) => setErrorMsg(e?.response?.data?.detail ?? 'Failed to delete assignment'),
+    onError: (e: Error) => setErrorMsg((e as AxiosError<{ detail: string }>)?.response?.data?.detail ?? 'Failed to delete assignment'),
   });
 
   const openCreate = () => {

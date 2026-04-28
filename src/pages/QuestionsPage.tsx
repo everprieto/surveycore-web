@@ -7,12 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { questionsApi } from '../api/questions';
 import { StatusBadge } from '../components/StatusBadge';
 import { PageWrapper } from '../components/PageWrapper';
+import type { QuestionDetail } from '../types';
 
 export function QuestionsPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
 
-  const { data: questions, isLoading, error } = useQuery({
+  const { data: questions, isLoading, error } = useQuery<QuestionDetail[]>({
     queryKey: ['questions'],
     queryFn: questionsApi.getAll,
   });
@@ -68,8 +69,8 @@ export function QuestionsPage() {
                   <TableCell sx={{ fontWeight: 600 }}>{q.logical_code}</TableCell>
                   <TableCell><StatusBadge status={q.answer_type} /></TableCell>
                   <TableCell><StatusBadge status={q.status} /></TableCell>
-                  <TableCell>{(q as any).translations?.length ?? '—'}</TableCell>
-                  <TableCell>{(q as any).options?.length ?? '—'}</TableCell>
+                  <TableCell>{q.translations?.length ?? '—'}</TableCell>
+                  <TableCell>{q.options?.length ?? '—'}</TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                       <Button
