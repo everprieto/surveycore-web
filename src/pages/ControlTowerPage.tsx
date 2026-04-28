@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Typography, Paper, Box, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, CircularProgress,
@@ -21,6 +21,36 @@ const PAGE_SIZES      = [25, 50, 100];
 
 type SortCol = 'project_code' | 'project_name' | 'survey_type' | 'survey_status' | 'sent_count' | 'done_count' | 'last_response';
 
+// SortHeader component defined outside to avoid re-creation during render
+function SortHeader({
+  col,
+  label,
+  sortBy,
+  sortDir,
+  onSort,
+}: {
+  col: SortCol;
+  label: string;
+  sortBy: SortCol;
+  sortDir: 'asc' | 'desc';
+  onSort: (col: SortCol) => void;
+}) {
+  return (
+    <TableSortLabel
+      active={sortBy === col}
+      direction={sortBy === col ? sortDir : 'asc'}
+      onClick={() => onSort(col)}
+      sx={{
+        color: 'white !important',
+        '& .MuiTableSortLabel-icon': { color: 'rgba(255,255,255,0.5) !important' },
+        '&.Mui-active .MuiTableSortLabel-icon': { color: '#c8102e !important' },
+      }}
+    >
+      {label}
+    </TableSortLabel>
+  );
+}
+
 export function ControlTowerPage() {
   const navigate = useNavigate();
 
@@ -33,7 +63,25 @@ export function ControlTowerPage() {
   const [sortDir,       setSortDir]       = useState<'asc' | 'desc'>('asc');
 
   const debouncedSearch = useDebounce(search, 350);
-  useEffect(() => setPage(0), [debouncedSearch, surveyStatus, langCode, sortBy, sortDir]);
+
+  // Track filter changes to reset page
+  const prevFiltersRef = useRef({ debouncedSearch, surveyStatus, langCode, sortBy, sortDir });
+
+  useEffect(() => {
+    const prev = prevFiltersRef.current;
+    const hasFiltersChanged =
+      prev.debouncedSearch !== debouncedSearch ||
+      prev.surveyStatus !== surveyStatus ||
+      prev.langCode !== langCode ||
+      prev.sortBy !== sortBy ||
+      prev.sortDir !== sortDir;
+
+    if (hasFiltersChanged && page !== 0) {
+      setPage(0);
+    }
+
+    prevFiltersRef.current = { debouncedSearch, surveyStatus, langCode, sortBy, sortDir };
+  }, [debouncedSearch, surveyStatus, langCode, sortBy, sortDir, page]);
 
   const params: ControlTowerParams = {
     page:          page + 1,
@@ -62,22 +110,6 @@ export function ControlTowerPage() {
   const total   = data?.total ?? 0;
   const globalRate = totals && totals.total_sent > 0
     ? Math.round((totals.total_completed / totals.total_sent) * 100) : 0;
-
-  const SortHeader = useMemo(() => ({ col, label }: { col: SortCol; label: string }) => (
-    <TableSortLabel
-      active={sortBy === col}
-      direction={sortBy === col ? sortDir : 'asc'}
-      onClick={() => handleSort(col)}
-      sx={{
-        color: 'white !important',
-        '& .MuiTableSortLabel-icon': { color: 'rgba(255,255,255,0.5) !important' },
-        '&.Mui-active .MuiTableSortLabel-icon': { color: '#c8102e !important' },
-      }}
-    >
-      {label}
-    </TableSortLabel>
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  ), [sortBy, sortDir, handleSort]);
 
   return (
     <PageWrapper maxWidth="xl">
@@ -164,15 +196,15 @@ export function ControlTowerPage() {
             <TableHead sx={{ bgcolor: '#1a2332' }}>
               <TableRow>
                 <TableCell sx={{ color: 'white', fontWeight: 600, width: 36 }}>#</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 600 }}><SortHeader col="project_code" label="Project" /></TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 600 }}><SortHeader col="project_name" label="Client" /></TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}><SortHeader col="project_code" label="Project" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} /></TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}><SortHeader col="project_name" label="Client" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} /></TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>Manager</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 600 }}><SortHeader col="survey_type"   label="Type" /></TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}><SortHeader col="survey_type" label="Type" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} /></TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>Lang</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 600 }}><SortHeader col="survey_status" label="Status" /></TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}><SortHeader col="survey_status" label="Status" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} /></TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>Planned</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 130 }}><SortHeader col="sent_count"    label="Completion" /></TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 600 }}><SortHeader col="last_response" label="Last Response" /></TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600, minWidth: 130 }}><SortHeader col="sent_count" label="Completion" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} /></TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}><SortHeader col="last_response" label="Last Response" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} /></TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>Results</TableCell>
               </TableRow>
             </TableHead>

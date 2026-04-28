@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Typography, Paper, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Button, Box, CircularProgress, TextField,
@@ -33,8 +33,23 @@ export function ProjectsPage() {
 
   const debouncedSearch = useDebounce(search, 350);
 
-  // Reset to page 0 when filters change
-  useEffect(() => { setPage(0); }, [debouncedSearch, status, sortBy, sortDir]);
+  // Track filter changes to reset page
+  const prevFiltersRef = useRef({ debouncedSearch, status, sortBy, sortDir });
+
+  useEffect(() => {
+    const prev = prevFiltersRef.current;
+    const hasFiltersChanged =
+      prev.debouncedSearch !== debouncedSearch ||
+      prev.status !== status ||
+      prev.sortBy !== sortBy ||
+      prev.sortDir !== sortDir;
+
+    if (hasFiltersChanged && page !== 0) {
+      setPage(0);
+    }
+
+    prevFiltersRef.current = { debouncedSearch, status, sortBy, sortDir };
+  }, [debouncedSearch, status, sortBy, sortDir, page]);
 
   const params: ProjectsParams = {
     page:      page + 1,   // backend is 1-indexed

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Typography, Paper, Box, TextField, MenuItem, Button, Alert,
 } from '@mui/material';
@@ -29,8 +29,12 @@ export function CreateQuestionPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Track if form has been initialized to avoid cascading renders
+  const initializedRef = useRef(false);
+
   useEffect(() => {
-    if (existing) {
+    if (existing && !initializedRef.current) {
+      initializedRef.current = true;
       setLogicalCode(existing.logical_code);
       setAnswerType(existing.answer_type);
       const defaultTranslation = existing.translations.find((t) => t.is_default_language);
