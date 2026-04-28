@@ -163,7 +163,7 @@ export function NavBar() {
           <ListItem disablePadding>
             <ListItemButton onClick={handleLogout} sx={{ color: '#c8102e' }}>
               <LogoutIcon sx={{ mr: 1, fontSize: 18 }} />
-              <ListItemText primary="Logout" primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 600 }} />
+              <ListItemText primary={<Typography sx={{ fontSize: '0.9rem', fontWeight: 600 }}>Logout</Typography>} />
             </ListItemButton>
           </ListItem>
         </Box>

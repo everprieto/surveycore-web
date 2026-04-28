@@ -107,7 +107,7 @@ export function SurveyPreviewDialog({ surveyId, surveyType, language, open, onCl
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth
-      PaperProps={{ sx: { maxHeight: '90vh' } }}>
+      slotProps={{ paper: { sx: { maxHeight: '90vh' } } }}>
 
       {/* Header */}
       <DialogTitle sx={{ bgcolor: '#1a2332', color: 'white', pr: 6, py: 2 }}>

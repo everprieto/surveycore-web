@@ -298,5 +298,93 @@ onSuccess: () => {
 | `useQuery` no se actualiza | Llamar `queryClient.invalidateQueries()` después de mutations |
 | MUI tema inconsistente | Envolver en `ThemeProvider` en `main.tsx` |
 | `import.meta.env` undefined | Prefijo `VITE_` obligatorio en variables de entorno |
+
+---
+
+## Deployment a Azure Static Web Apps
+
+### 1. Crear la aplicación en Azure
+```bash
+# Desde Azure Portal:
+1. Crear "Static Web App" resource
+2. Conectar repositorio GitHub (autenticarse)
+3. Seleccionar rama (main/master)
+4. Framework: React
+5. App location: / (raíz)
+6. Output location: dist
+```
+
+### 2. Configuración automática
+El workflow de GitHub Actions en `.github/workflows/deploy.yml` se creará automáticamente. **Pero verificar que tenga:**
+
+```yaml
+# Clave
+app_location: '/'        # Raíz del repo
+output_location: 'dist'  # Carpeta de build
+skip_app_build: true     # Usa tu workflow personalizado
+```
+
+### 3. Secretos y variables
+Configurar en Azure Portal → Static Web App → Configuration → Application settings:
+
+| Variable | Valor |
+|----------|-------|
+| `VITE_API_BASE_URL` | URL backend (ej: `https://surveycore-api.azurewebsites.net`) |
+| `VITE_AZURE_CLIENT_ID` | Client ID de Entra ID |
+| `VITE_AZURE_TENANT_ID` | Tenant ID de Entra ID |
+
+### 4. Rutas y fallback
+El `staticwebapp.config.json` ya está configurado para:
+- SPA routing: cualquier ruta desconocida → `index.html`
+- Assets estáticos: `/assets/*` excluidos del fallback
+- Sin cache: todos los archivos sin cache para SSR-like behavior
+
+### 5. Troubleshooting: "Too many static files"
+**Problema:** Azure rechaza el deployment porque detecta +60k archivos.
+
+**Solución:**
+- ✅ Usar workflow GitHub Actions (`.github/workflows/deploy.yml`) — ya incluido
+- ✅ Asegurarse de que `.gitignore` excluye `node_modules/`
+- ✅ No commitear `dist/` — se genera en el workflow
+- ✅ Usar `npm ci` en lugar de `npm install` para reproducibilidad
+
+**Si el error persiste:**
+```bash
+# Verificar que node_modules está en .gitignore
+grep "node_modules" .gitignore
+
+# Eliminar node_modules si fue commiteado
+git rm -r --cached node_modules
+git commit -m "Remove node_modules from tracking"
+
+# Hacer push
+git push origin main
+```
+
+### 6. Verificar deployment
+1. Ir a Azure Portal → Static Web App → Deployments
+2. Hacer clic en la ejecución más reciente
+3. Si tiene estado ✅ **Build Succeeded**, el sitio está live
+4. Si tiene error ❌, hacer clic en el workflow run en GitHub para ver logs
+
+---
+
+## Workflow GitHub Actions
+
+Localización: `.github/workflows/deploy.yml`
+
+**Qué hace:**
+1. Checkout del código
+2. Setup Node.js 20
+3. `npm ci` — instala dependencias reproducibles
+4. `npm run lint` — valida TypeScript
+5. `npm run build` — compila a `dist/`
+6. Publica a Azure Static Web Apps
+
+**Solo se ejecuta:**
+- Pushes a `main` o `master`
+- PRs (para validación, no deployment)
+
+---
 | Ruta no cargada | Verificar `Route` en `App.tsx` y que el componente esté importado |
 | Microsoft SSO popup bloqueado | El popup debe abrirse desde un evento de usuario (click) |
