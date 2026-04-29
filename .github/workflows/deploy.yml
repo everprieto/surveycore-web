@@ -1,24 +1,23 @@
-name: Build and Deploy to Azure Static Web Apps
+name: Build and Deploy Frontend
 
 on:
   push:
     branches:
+      - dev
+      - qa
       - main
-      - master
   pull_request:
     branches:
+      - dev
+      - qa
       - main
-      - master
 
 jobs:
-  build_and_deploy:
+  build_and_test:
     runs-on: ubuntu-latest
-    name: Build and Deploy
+    name: Build and Test
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: true
-          lfs: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,16 +33,80 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VITE_AZURE_CLIENT_ID: ${{ secrets.VITE_AZURE_CLIENT_ID }}
+          VITE_AZURE_TENANT_ID: ${{ secrets.VITE_AZURE_TENANT_ID }}
 
-      - name: Deploy to Azure Static Web Apps
-        if: github.event_name == 'push'
-        id: builddeploy
+  deploy_qa:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    name: Deploy to QA
+    if: github.event_name == 'push' && github.ref == 'refs/heads/qa'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Create .env.qa from example
+        run: cp .env.qa.example .env.qa
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for QA
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL_QA }}
+          VITE_AZURE_CLIENT_ID: ${{ secrets.VITE_AZURE_CLIENT_ID }}
+          VITE_AZURE_TENANT_ID: ${{ secrets.VITE_AZURE_TENANT_ID }}
+
+      - name: Deploy to Azure Static Web Apps (QA)
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_TOKEN }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_TOKEN_QA }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
           app_location: '/'
           output_location: 'dist'
           skip_app_build: true
 
+  deploy_production:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    name: Deploy to Production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Create .env.production from example
+        run: cp .env.production.example .env.production
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for Production
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL_PRODUCTION }}
+          VITE_AZURE_CLIENT_ID: ${{ secrets.VITE_AZURE_CLIENT_ID }}
+          VITE_AZURE_TENANT_ID: ${{ secrets.VITE_AZURE_TENANT_ID }}
+
+      - name: Deploy to Azure Static Web Apps (Production)
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_TOKEN_PRODUCTION }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: 'upload'
+          app_location: '/'
+          output_location: 'dist'
+          skip_app_build: true
