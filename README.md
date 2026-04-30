@@ -2,6 +2,8 @@
 
 React SPA for SurveyCore — multi-language survey management with role-based access control and Microsoft Entra ID SSO.
 
+**Deployed on:** [Azure Static Web Apps](https://happy-smoke-01be95e1e.7.azurestaticapps.net)
+
 ## Stack
 
 | | |
@@ -11,22 +13,24 @@ React SPA for SurveyCore — multi-language survey management with role-based ac
 | **State** | Zustand 5 (auth) · TanStack Query 5 (server state) |
 | **Auth** | JWT · MSAL PKCE (Microsoft Entra ID) |
 | **Forms** | React Hook Form · Zod |
+| **Deployment** | Azure Static Web Apps (qa/main branches) |
 
 ---
 
-## Quick Start
+## Quick Start (Local Development)
 
 ```bash
 # 1. Clone and enter repo
-git clone <url> surveycore-web
+git clone https://github.com/everprieto/surveycore-web.git
 cd surveycore-web
+git checkout dev
 
 # 2. Install dependencies
 npm install
 
 # 3. Configure environment
 cp .env.example .env
-# Edit .env with your values
+# VITE_API_BASE_URL=http://localhost:8000
 
 # 4. Run
 npm run dev       # http://localhost:5173
@@ -34,7 +38,7 @@ npm run build     # Production build → dist/
 npm run lint      # ESLint check
 ```
 
-Requires the API running at the URL configured in `VITE_API_BASE_URL`.
+**Requires:** Backend API running at configured `VITE_API_BASE_URL`
 
 ---
 
@@ -43,58 +47,134 @@ Requires the API running at the URL configured in `VITE_API_BASE_URL`.
 ```
 surveycore-web/
 ├── src/
-│   ├── api/              # Axios clients per domain (auth, surveys, projects…)
-│   ├── auth/             # MSAL config (Microsoft SSO)
-│   ├── components/       # NavBar, ProtectedRoute, PageWrapper, StatusBadge…
-│   ├── constants/        # Permission codes, roles
-│   ├── hooks/            # usePermission, useDebounce
-│   ├── pages/            # One component per route
-│   │   └── admin/        # UsersPage, RolesPage
-│   ├── store/            # authStore (Zustand)
-│   └── types/            # All TypeScript domain interfaces
-├── public/
-├── .env.example
+│   ├── api/                  # Axios clients (auth, surveys, projects, results…)
+│   ├── auth/                 # MSAL config (Microsoft Entra ID SSO)
+│   ├── components/           # Reusable: NavBar, ProtectedRoute, PageWrapper…
+│   ├── constants/            # Permission codes, role definitions
+│   ├── hooks/                # usePermission, useDebounce, custom hooks
+│   ├── pages/                # One component per route
+│   │   ├── HomePage.tsx
+│   │   ├── LoginPage.tsx
+│   │   ├── ProjectsPage.tsx
+│   │   ├── SurveyListPage.tsx
+│   │   ├── ConfigureSurveyPage.tsx
+│   │   ├── QuestionsPage.tsx
+│   │   ├── QuestionDetailPage.tsx
+│   │   ├── TakeSurveyPage.tsx
+│   │   ├── SurveyResultsPage.tsx
+│   │   ├── ControlTowerPage.tsx
+│   │   └── admin/
+│   │       ├── UsersPage.tsx
+│   │       └── RolesPage.tsx
+│   ├── store/                # authStore (Zustand)
+│   ├── types/                # TypeScript interfaces
+│   ├── App.tsx               # Router configuration
+│   └── main.tsx              # React entry point
+├── public/                   # Static assets
+│   ├── favicon.svg
+│   └── icons.svg
+├── .github/workflows/        # CI/CD
+│   └── deploy-azure.yml      # GitHub Actions → Azure Static Web Apps
+├── .env.example              # Local dev template
+├── .env.qa.example           # QA environment variables
+├── .env.production.example   # Production variables
+├── staticwebapp.config.json  # Azure SPA routing config
+├── CLAUDE.md                 # Frontend development guide
 ├── package.json
 ├── vite.config.ts
-└── tsconfig.json
+├── tsconfig.json
+└── .gitignore
 ```
 
 ---
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and fill in:
+Copy `.env.example` to `.env` and configure:
 
-| Variable | Description |
-|---|---|
-| `VITE_API_BASE_URL` | Backend URL — `http://localhost:8000` for dev |
-| `VITE_AZURE_CLIENT_ID` | Entra ID client — optional, only needed for SSO login |
-| `VITE_AZURE_TENANT_ID` | Entra ID tenant — optional, only needed for SSO login |
+| Variable | Description | Examples |
+|---|---|---|
+| `VITE_API_BASE_URL` | Backend API URL | `http://localhost:8000` (dev) · `https://surveycore-api.onrender.com` (qa/prod) |
+| `VITE_AZURE_CLIENT_ID` | Entra ID app registration | `4012c112-0db8-4411-85e5-907edceb644e` |
+| `VITE_AZURE_TENANT_ID` | Entra ID tenant ID | `0a964db6-c0c3-43a8-af0d-bccc2d2bd487` |
+
+**Per-environment examples:**
+- `.env.example` → Local dev (localhost backend)
+- `.env.qa.example` → QA (Render backend)
+- `.env.production.example` → Production (Render backend)
 
 ---
 
-## Pages
+## Routes & Pages
 
-| Route | Page | Auth |
+| Route | Component | Auth |
 |---|---|---|
 | `/` | HomePage | Public |
 | `/login` | LoginPage | Public |
-| `/projects` | ProjectsPage | Protected |
-| `/projects/:id/surveys` | SurveyListPage | Protected |
-| `/surveys/:id/configure` | ConfigureSurveyPage | Protected |
-| `/questions` | QuestionsPage | Protected |
-| `/questions/:id` | QuestionDetailPage | Protected |
-| `/results/:id` | SurveyResultsPage | Protected |
-| `/control-tower` | ControlTowerPage | Protected |
-| `/admin/users` | UsersPage | Admin only |
-| `/admin/roles` | RolesPage | Admin only |
-| `/survey/:token` | TakeSurveyPage | No auth (public token) |
+| `/projects` | ProjectsPage | JWT required |
+| `/projects/:id/surveys` | SurveyListPage | JWT required |
+| `/surveys/:id/configure` | ConfigureSurveyPage | JWT required |
+| `/questions` | QuestionsPage | JWT required |
+| `/questions/:id` | QuestionDetailPage | JWT required |
+| `/results/:id` | SurveyResultsPage | JWT required |
+| `/control-tower` | ControlTowerPage | JWT required |
+| `/admin/users` | UsersPage | Admin role |
+| `/admin/roles` | RolesPage | Admin role |
+| `/survey/:token` | TakeSurveyPage | Token-based (public) |
 
 ---
 
-## Azure Deployment
+## Deployment
 
-Deploy as **Azure Static Web Apps**:
-- App location: `/`
-- Output location: `dist`
-- Set environment variables in Azure Static Web Apps → Configuration
+### Branch Strategy
+
+| Branch | Environment | URL |
+|---|---|---|
+| `dev` | Local | `http://localhost:5173` |
+| `qa` | QA | `https://happy-smoke-01be95e1e.7.azurestaticapps.net` |
+| `main` | Production | (separate Azure Static Web App) |
+
+### Push to Deploy
+
+All deployments use GitHub Actions + Azure Static Web Apps:
+
+```bash
+# QA deployment
+git checkout qa
+git merge dev
+git push origin qa
+# Workflow triggers: build, lint, deploy to Azure
+
+# Production deployment
+git checkout main
+git merge qa
+git push origin main
+# Workflow triggers: build, lint, deploy to Azure
+```
+
+**GitHub Secrets Required:**
+- `VITE_AZURE_CLIENT_ID` — Entra ID client
+- `VITE_AZURE_TENANT_ID` — Entra ID tenant
+- `AZURE_STATIC_WEB_APPS_TOKEN_QA` — Azure deployment token (qa branch)
+- `AZURE_STATIC_WEB_APPS_TOKEN_PRODUCTION` — Azure deployment token (main branch)
+
+### SPA Routing
+
+`staticwebapp.config.json` configures Azure to:
+- Serve `/index.html` for all unknown routes (SPA fallback)
+- Exclude `/assets/*`, images, and manifests from fallback
+- Enable caching for assets, disable for HTML
+
+---
+
+## Troubleshooting
+
+| Issue | Solution |
+|---|---|
+| CORS error from frontend | Check `CORS_ORIGINS` in backend, include frontend URL |
+| 404 on `/login` | Ensure `staticwebapp.config.json` is deployed to Azure |
+| Token expired / redirect loop | Clear localStorage, reload page |
+| Microsoft SSO popup blocked | Ensure login triggered by user click (not auto) |
+| Build fails: `VITE_*` undefined | Check `.env` file exists with correct prefix |
+
+See [CLAUDE.md](./CLAUDE.md) for development patterns and API integration details.
