@@ -20,6 +20,10 @@ export const surveysApi = {
     await apiClient.delete(`/surveys/${surveyId}/questions/${sqId}`);
   },
 
+  updateQuestion: async (surveyId: number, sqId: number, data: { is_required: boolean }): Promise<void> => {
+    await apiClient.patch(`/surveys/${surveyId}/questions/${sqId}`, data);
+  },
+
   addRecipient: async (surveyId: number, data: RecipientCreate): Promise<void> => {
     await apiClient.post(`/surveys/${surveyId}/recipients`, data);
   },

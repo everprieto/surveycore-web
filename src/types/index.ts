@@ -176,6 +176,7 @@ export interface SurveyQuestion {
   survey_id: number;
   master_question_id: number;
   display_order: number;
+  is_required: boolean;
 }
 
 export interface Recipient {
@@ -218,6 +219,7 @@ export interface QuestionForSurvey {
   answer_type: string;
   question_text: string;
   options: { id: number; text: string }[];
+  is_required: boolean;
 }
 
 export interface SurveyTakeData {

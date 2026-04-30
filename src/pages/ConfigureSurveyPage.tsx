@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Typography, Paper, Box, Grid, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Button, TextField,
-  CircularProgress, Snackbar, Tooltip, IconButton,
+  CircularProgress, Snackbar, Tooltip, IconButton, Switch,
 } from '@mui/material';
 import { Preview as PreviewIcon } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -14,6 +14,11 @@ import { PageWrapper } from '../components/PageWrapper';
 import { SurveyPreviewDialog } from '../components/SurveyPreviewDialog';
 import { usePermission } from '../hooks/usePermission';
 import type { RecipientCreate } from '../types';
+
+const isValidEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
 export function ConfigureSurveyPage() {
   const navigate = useNavigate();
@@ -49,6 +54,12 @@ export function ConfigureSurveyPage() {
   const removeQuestion = useMutation({
     mutationFn: (sqId: number) => surveysApi.removeQuestion(id, sqId),
     onSuccess: () => { invalidate(); setToast('Question removed'); },
+  });
+
+  const updateQuestion = useMutation({
+    mutationFn: ({ sqId, isRequired }: { sqId: number; isRequired: boolean }) =>
+      surveysApi.updateQuestion(id, sqId, { is_required: isRequired }),
+    onSuccess: () => { invalidate(); },
   });
 
   const addRecipient = useMutation({
@@ -201,6 +212,7 @@ export function ConfigureSurveyPage() {
                     <TableCell>#</TableCell>
                     <TableCell>Code</TableCell>
                     <TableCell>Type</TableCell>
+                    <TableCell align="center">Required</TableCell>
                     <TableCell align="center">Remove</TableCell>
                   </TableRow>
                 </TableHead>
@@ -219,6 +231,18 @@ export function ConfigureSurveyPage() {
                         <TableCell>{sq.display_order}</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>{q?.logical_code ?? sq.master_question_id}</TableCell>
                         <TableCell>{q?.answer_type ?? '—'}</TableCell>
+                        <TableCell align="center">
+                          {canEdit ? (
+                            <Switch
+                              size="small"
+                              checked={sq.is_required}
+                              onChange={(e) => updateQuestion.mutate({ sqId: sq.id, isRequired: e.target.checked })}
+                              disabled={updateQuestion.isPending}
+                            />
+                          ) : (
+                            <Typography variant="body2">{sq.is_required ? '✓' : '—'}</Typography>
+                          )}
+                        </TableCell>
                         <TableCell align="center">
                           {canEdit && (
                             <Button
@@ -305,24 +329,30 @@ export function ConfigureSurveyPage() {
                   { label: 'Email', key: 'recipient_email' },
                   { label: 'Company', key: 'company' },
                   { label: 'Role', key: 'role' },
-                ].map(({ label, key }) => (
-                  <Grid key={key} size={{ xs: 12, sm: 6 }}>
-                    <TextField
-                      label={label}
-                      size="small"
-                      fullWidth
-                      value={recipient[key as keyof RecipientCreate]}
-                      onChange={(e) => setRecipient((prev) => ({ ...prev, [key]: e.target.value }))}
-                    />
-                  </Grid>
-                ))}
+                ].map(({ label, key }) => {
+                  const isEmailField = key === 'recipient_email';
+                  const emailError = isEmailField && recipient.recipient_email && !isValidEmail(recipient.recipient_email);
+                  return (
+                    <Grid key={key} size={{ xs: 12, sm: 6 }}>
+                      <TextField
+                        label={label}
+                        size="small"
+                        fullWidth
+                        value={recipient[key as keyof RecipientCreate]}
+                        onChange={(e) => setRecipient((prev) => ({ ...prev, [key]: e.target.value }))}
+                        error={!!emailError}
+                        helperText={emailError ? 'Invalid email address' : ''}
+                      />
+                    </Grid>
+                  );
+                })}
               </Grid>
               <Button
                 variant="contained"
                 size="small"
                 sx={{ mt: 1.5, bgcolor: '#1a2332', textTransform: 'none' }}
                 onClick={() => addRecipient.mutate(recipient)}
-                disabled={!recipient.recipient_name || !recipient.recipient_email}
+                disabled={!recipient.recipient_name || !recipient.recipient_email || !isValidEmail(recipient.recipient_email)}
               >
                 Add Recipient
               </Button>
