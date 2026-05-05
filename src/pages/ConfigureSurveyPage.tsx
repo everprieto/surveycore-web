@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Typography, Paper, Box, Grid, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Button, TextField,
-  CircularProgress, Snackbar, Tooltip, IconButton, Switch,
+  CircularProgress, Tooltip, IconButton, Switch, Alert,
 } from '@mui/material';
 import { Preview as PreviewIcon } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -29,7 +29,13 @@ export function ConfigureSurveyPage() {
   const canSend = usePermission('survey.send');
 
   const [toast, setToast] = useState('');
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>('success');
   const [previewOpen, setPreviewOpen] = useState(false);
+
+  const showToast = (message: string, severity: 'success' | 'error' = 'success') => {
+    setToast(message);
+    setToastSeverity(severity);
+  };
   const [recipient, setRecipient] = useState<RecipientCreate>({
     recipient_name: '', recipient_email: '', company: '', role: '',
   });
@@ -48,18 +54,21 @@ export function ConfigureSurveyPage() {
 
   const addQuestion = useMutation({
     mutationFn: (qid: number) => surveysApi.addQuestion(id, qid),
-    onSuccess: () => { invalidate(); setToast('Question added'); },
+    onSuccess: () => { invalidate(); showToast('Question added'); },
+    onError: (error: any) => showToast(`Error: ${error.response?.data?.detail || (error as Error).message}`, 'error'),
   });
 
   const removeQuestion = useMutation({
     mutationFn: (sqId: number) => surveysApi.removeQuestion(id, sqId),
-    onSuccess: () => { invalidate(); setToast('Question removed'); },
+    onSuccess: () => { invalidate(); showToast('Question removed'); },
+    onError: (error: any) => showToast(`Error: ${error.response?.data?.detail || (error as Error).message}`, 'error'),
   });
 
   const updateQuestion = useMutation({
     mutationFn: ({ sqId, isRequired }: { sqId: number; isRequired: boolean }) =>
       surveysApi.updateQuestion(id, sqId, { is_required: isRequired }),
     onSuccess: () => { invalidate(); },
+    onError: (error: any) => showToast(`Error: ${error.response?.data?.detail || (error as Error).message}`, 'error'),
   });
 
   const addRecipient = useMutation({
@@ -67,18 +76,37 @@ export function ConfigureSurveyPage() {
     onSuccess: () => {
       invalidate();
       setRecipient({ recipient_name: '', recipient_email: '', company: '', role: '' });
-      setToast('Recipient added');
+      showToast('Recipient added');
     },
+    onError: (error: any) => showToast(`Error: ${error.response?.data?.detail || (error as Error).message}`, 'error'),
   });
 
   const removeRecipient = useMutation({
     mutationFn: (rid: number) => surveysApi.removeRecipient(id, rid),
-    onSuccess: () => { invalidate(); setToast('Recipient removed'); },
+    onSuccess: () => { invalidate(); showToast('Recipient removed'); },
+    onError: (error: any) => showToast(`Error: ${error.response?.data?.detail || (error as Error).message}`, 'error'),
   });
 
   const generateLinks = useMutation({
     mutationFn: () => surveysApi.generateLinks(id),
-    onSuccess: () => { invalidate(); setToast('Access links generated!'); },
+    onSuccess: () => { invalidate(); showToast('Access links generated!'); },
+    onError: (error: any) => showToast(`Error: ${error.response?.data?.detail || (error as Error).message}`, 'error'),
+  });
+
+  const sendEmails = useMutation({
+    mutationFn: () => surveysApi.sendEmails(id),
+    onSuccess: (result) => {
+      if (result.success_count > 0 && config) {
+        qc.setQueryData(['survey-config', id], {
+          ...config,
+          survey: { ...config.survey, survey_status: 'SENT' },
+        });
+      }
+      invalidate();
+      const message = `Emails sent: ${result.success_count} succeeded, ${result.failed_count} failed`;
+      showToast(message, result.failed_count > 0 ? 'error' : 'success');
+    },
+    onError: (error: any) => showToast(`Error: ${error.response?.data?.detail || (error as Error).message}`, 'error'),
   });
 
   if (isLoading) {
@@ -110,6 +138,8 @@ export function ConfigureSurveyPage() {
   const surveyUrl = (token: string) =>
     `${window.location.origin}/survey/${token}`;
 
+  const isSurveyLocked = config.survey.survey_status === 'SENT';
+
   return (
     <PageWrapper maxWidth="xl">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -117,9 +147,12 @@ export function ConfigureSurveyPage() {
           <Typography variant="overline" color="text.secondary">
             Survey #{id} · {config.survey.language_code}
           </Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332' }}>
-            Configure Survey — {config.survey.survey_type}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332' }}>
+              Configure Survey — {config.survey.survey_type}
+            </Typography>
+            <StatusBadge status={config.survey.survey_status} />
+          </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           <Button
@@ -186,6 +219,7 @@ export function ConfigureSurveyPage() {
                             variant="contained"
                             sx={{ bgcolor: '#1a2332', minWidth: 0, px: 1.5, textTransform: 'none' }}
                             onClick={() => addQuestion.mutate(q.id)}
+                            disabled={isSurveyLocked}
                           >
                             +
                           </Button>
@@ -251,6 +285,7 @@ export function ConfigureSurveyPage() {
                               variant="outlined"
                               sx={{ minWidth: 0, px: 1.5, textTransform: 'none' }}
                               onClick={() => removeQuestion.mutate(sq.id)}
+                              disabled={isSurveyLocked}
                             >
                               ×
                             </Button>
@@ -307,6 +342,7 @@ export function ConfigureSurveyPage() {
                             variant="outlined"
                             sx={{ minWidth: 0, px: 1.5, textTransform: 'none' }}
                             onClick={() => removeRecipient.mutate(r.id)}
+                            disabled={isSurveyLocked}
                           >
                             ×
                           </Button>
@@ -319,7 +355,7 @@ export function ConfigureSurveyPage() {
             </TableContainer>
 
             {/* Add recipient form — only for users with survey.edit */}
-            {canEdit && (<Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+            {canEdit && !isSurveyLocked && (<Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
               <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>
                 Add Recipient
               </Typography>
@@ -332,6 +368,7 @@ export function ConfigureSurveyPage() {
                 ].map(({ label, key }) => {
                   const isEmailField = key === 'recipient_email';
                   const emailError = isEmailField && recipient.recipient_email && !isValidEmail(recipient.recipient_email);
+                  const emailExists = isEmailField && recipient.recipient_email && config.recipients.some((r) => r.recipient_email.toLowerCase() === recipient.recipient_email.toLowerCase());
                   return (
                     <Grid key={key} size={{ xs: 12, sm: 6 }}>
                       <TextField
@@ -340,8 +377,8 @@ export function ConfigureSurveyPage() {
                         fullWidth
                         value={recipient[key as keyof RecipientCreate]}
                         onChange={(e) => setRecipient((prev) => ({ ...prev, [key]: e.target.value }))}
-                        error={!!emailError}
-                        helperText={emailError ? 'Invalid email address' : ''}
+                        error={!!emailError || !!emailExists}
+                        helperText={emailError ? 'Invalid email address' : emailExists ? 'This email is already added' : ''}
                       />
                     </Grid>
                   );
@@ -352,7 +389,7 @@ export function ConfigureSurveyPage() {
                 size="small"
                 sx={{ mt: 1.5, bgcolor: '#1a2332', textTransform: 'none' }}
                 onClick={() => addRecipient.mutate(recipient)}
-                disabled={!recipient.recipient_name || !recipient.recipient_email || !isValidEmail(recipient.recipient_email)}
+                disabled={!recipient.recipient_name || !recipient.recipient_email || !isValidEmail(recipient.recipient_email) || config.recipients.some((r) => r.recipient_email.toLowerCase() === recipient.recipient_email.toLowerCase())}
               >
                 Add Recipient
               </Button>
@@ -365,16 +402,34 @@ export function ConfigureSurveyPage() {
               <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>
                 Access Links ({config.access_links.length})
               </Typography>
-              {canSend && (
-                <Button
-                  size="small"
-                  variant="contained"
-                  sx={{ bgcolor: '#c8102e', textTransform: 'none' }}
-                  onClick={() => generateLinks.mutate()}
-                  disabled={config.recipients.length === 0}
-                >
-                  Generate Links
-                </Button>
+              {canSend && !isSurveyLocked && (
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    sx={{ bgcolor: '#c8102e', textTransform: 'none' }}
+                    onClick={() => generateLinks.mutate()}
+                    disabled={config.recipients.length === 0}
+                  >
+                    Generate Links
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    sx={{ bgcolor: '#0369a1', textTransform: 'none', position: 'relative' }}
+                    onClick={() => sendEmails.mutate()}
+                    disabled={config.access_links.length === 0 || sendEmails.isPending}
+                  >
+                    {sendEmails.isPending ? (
+                      <>
+                        <CircularProgress size={16} sx={{ mr: 1, color: 'white' }} />
+                        Sending...
+                      </>
+                    ) : (
+                      'Send Emails'
+                    )}
+                  </Button>
+                </Box>
               )}
             </Box>
             {config.access_links.length === 0 ? (
@@ -428,13 +483,17 @@ export function ConfigureSurveyPage() {
         </Grid>
       </Grid>
 
-      <Snackbar
-        open={!!toast}
-        autoHideDuration={2500}
-        onClose={() => setToast('')}
-        message={toast}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      />
+      {toast && (
+        <Box sx={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 9999 }}>
+          <Alert
+            severity={toastSeverity}
+            onClose={() => setToast('')}
+            sx={{ minWidth: 300 }}
+          >
+            {toast}
+          </Alert>
+        </Box>
+      )}
 
       <SurveyPreviewDialog
         surveyId={id}

@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { Survey, SurveyCreate, SurveyConfig, RecipientCreate, SurveyTakeData } from '../types';
+import type { Survey, SurveyCreate, SurveyConfig, RecipientCreate, SurveyTakeData, SendEmailResponse } from '../types';
 
 export const surveysApi = {
   create: async (data: SurveyCreate): Promise<Survey> => {
@@ -34,6 +34,15 @@ export const surveysApi = {
 
   generateLinks: async (surveyId: number): Promise<void> => {
     await apiClient.post(`/surveys/${surveyId}/generate-links`);
+  },
+
+  sendEmails: async (surveyId: number, recipientIds?: number[]): Promise<SendEmailResponse> => {
+    const body: { recipient_ids?: number[] } = {};
+    if (recipientIds !== undefined) {
+      body.recipient_ids = recipientIds;
+    }
+    const response = await apiClient.post<SendEmailResponse>(`/surveys/${surveyId}/send-emails`, body);
+    return response.data;
   },
 
   getPreview: async (surveyId: number): Promise<SurveyTakeData> => {

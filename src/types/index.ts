@@ -213,6 +213,13 @@ export interface SurveyConfig {
   access_links: AccessLink[];
 }
 
+export interface SendEmailResponse {
+  success_count: number;
+  failed_count: number;
+  total: number;
+  errors: string[];
+}
+
 // Public survey taking
 export interface QuestionForSurvey {
   sq_id: number;
