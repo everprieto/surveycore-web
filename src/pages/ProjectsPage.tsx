@@ -180,6 +180,12 @@ export function ProjectsPage() {
                   </TableCell>
                 ))}
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>Cost Center</TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>Client Mgr Email</TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>Delivery Mgr Email</TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>Client Exec Mgr</TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>Delivery Exec Mgr</TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>Project Head</TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>Legal Entity</TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>
                   <TableSortLabel
                     active={sortBy === 'status'}
@@ -203,14 +209,14 @@ export function ProjectsPage() {
                 // Skeleton rows while loading
                 Array.from({ length: pageSize < 10 ? pageSize : 8 }).map((_, i) => (
                   <TableRow key={i}>
-                    {Array.from({ length: 6 }).map((__, j) => (
+                    {Array.from({ length: 12 }).map((__, j) => (
                       <TableCell key={j}><Skeleton variant="text" width="80%" /></TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : projects.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 6, color: 'text.secondary' }}>
+                  <TableCell colSpan={12} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                     {search || status ? 'No projects match the current filters.' : 'No projects found.'}
                   </TableCell>
                 </TableRow>
@@ -221,6 +227,12 @@ export function ProjectsPage() {
                     <TableCell>{project.project_name}</TableCell>
                     <TableCell>{project.client_name}</TableCell>
                     <TableCell sx={{ color: 'text.secondary' }}>{project.cost_center}</TableCell>
+                    <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem' }}>{project.client_manager_email ?? '—'}</TableCell>
+                    <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem' }}>{project.delivery_manager_email ?? '—'}</TableCell>
+                    <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem' }}>{project.client_exec_mgr_act_email ?? '—'}</TableCell>
+                    <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem' }}>{project.delivery_exec_mgr_act_email ?? '—'}</TableCell>
+                    <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem' }}>{project.project_head_email ?? '—'}</TableCell>
+                    <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem' }}>{project.legal_entity_name ?? '—'}</TableCell>
                     <TableCell><StatusBadge status={project.status} /></TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>

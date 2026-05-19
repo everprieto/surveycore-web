@@ -119,6 +119,12 @@ export interface Project {
   project_name: string;
   client_name: string;
   cost_center: string;
+  client_manager_email?: string;
+  delivery_manager_email?: string;
+  client_exec_mgr_act_email?: string;
+  delivery_exec_mgr_act_email?: string;
+  project_head_email?: string;
+  legal_entity_name?: string;
   manager_id: number;
   start_date: string;
   end_date?: string;
@@ -147,6 +153,12 @@ export interface ProjectCreate {
   project_name: string;
   client_name: string;
   cost_center: string;
+  client_manager_email?: string;
+  delivery_manager_email?: string;
+  client_exec_mgr_act_email?: string;
+  delivery_exec_mgr_act_email?: string;
+  project_head_email?: string;
+  legal_entity_name?: string;
   start_date: string;
   end_date?: string;
   status?: string;
@@ -312,4 +324,19 @@ export interface ControlTowerParams {
   language_code?: string;
   sort_by?: string;
   sort_dir?: 'asc' | 'desc';
+}
+
+// Admin — Legal Entities
+export interface LegalEntity {
+  id: number;
+  name: string;
+}
+
+export interface UserLegalEntityRow {
+  id: number;
+  user_id: number;
+  user_name: string;
+  user_email: string;
+  legal_entity_id: number;
+  legal_entity_name: string;
 }
