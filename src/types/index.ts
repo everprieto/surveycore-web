@@ -121,10 +121,8 @@ export interface Project {
   cost_center: string;
   client_manager_email?: string;
   delivery_manager_email?: string;
-  client_exec_mgr_act_email?: string;
-  delivery_exec_mgr_act_email?: string;
   project_head_email?: string;
-  legal_entity_name?: string;
+  legal_entity_id?: number;
   manager_id: number;
   start_date: string;
   end_date?: string;
@@ -155,10 +153,8 @@ export interface ProjectCreate {
   cost_center: string;
   client_manager_email?: string;
   delivery_manager_email?: string;
-  client_exec_mgr_act_email?: string;
-  delivery_exec_mgr_act_email?: string;
   project_head_email?: string;
-  legal_entity_name?: string;
+  legal_entity_id?: number;
   start_date: string;
   end_date?: string;
   status?: string;
