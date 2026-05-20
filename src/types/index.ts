@@ -123,6 +123,7 @@ export interface Project {
   delivery_manager_email?: string;
   project_head_email?: string;
   legal_entity_id?: number;
+  legal_entity_name?: string;
   manager_id: number;
   start_date: string;
   end_date?: string;

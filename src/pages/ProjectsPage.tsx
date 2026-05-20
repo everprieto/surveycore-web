@@ -185,6 +185,7 @@ function ProjectAdminTab() {
                   </TableCell>
                 ))}
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>Cost Center</TableCell>
+                <TableCell sx={{ color: 'white', fontWeight: 600 }}>Legal Entity</TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>Client Mgr Email</TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>Delivery Mgr Email</TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}>Project Head</TableCell>
@@ -211,14 +212,14 @@ function ProjectAdminTab() {
                 // Skeleton rows while loading
                 Array.from({ length: pageSize < 10 ? pageSize : 8 }).map((_, i) => (
                   <TableRow key={i}>
-                    {Array.from({ length: 9 }).map((__, j) => (
+                    {Array.from({ length: 10 }).map((__, j) => (
                       <TableCell key={j}><Skeleton variant="text" width="80%" /></TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : projects.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} align="center" sx={{ py: 6, color: 'text.secondary' }}>
+                  <TableCell colSpan={10} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                     {search || status ? 'No projects match the current filters.' : 'No projects found.'}
                   </TableCell>
                 </TableRow>
@@ -229,6 +230,7 @@ function ProjectAdminTab() {
                     <TableCell>{project.project_name}</TableCell>
                     <TableCell>{project.client_name}</TableCell>
                     <TableCell sx={{ color: 'text.secondary' }}>{project.cost_center}</TableCell>
+                    <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem' }}>{project.legal_entity_name ?? '—'}</TableCell>
                     <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem' }}>{project.client_manager_email ?? '—'}</TableCell>
                     <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem' }}>{project.delivery_manager_email ?? '—'}</TableCell>
                     <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem' }}>{project.project_head_email ?? '—'}</TableCell>
