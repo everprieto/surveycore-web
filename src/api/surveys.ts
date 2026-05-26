@@ -1,7 +1,12 @@
 import { apiClient } from './client';
-import type { Survey, SurveyCreate, SurveyConfig, RecipientCreate, SurveyTakeData, SendEmailResponse } from '../types';
+import type { Survey, SurveyCreate, SurveyConfig, RecipientCreate, SurveyTakeData, SendEmailResponse, SurveyType } from '../types';
 
 export const surveysApi = {
+  getSurveyTypes: async (): Promise<SurveyType[]> => {
+    const response = await apiClient.get<SurveyType[]>('/surveys/types');
+    return response.data;
+  },
+
   create: async (data: SurveyCreate): Promise<Survey> => {
     const response = await apiClient.post<Survey>('/surveys/', data);
     return response.data;

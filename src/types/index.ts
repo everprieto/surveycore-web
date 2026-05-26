@@ -162,10 +162,16 @@ export interface ProjectCreate {
 }
 
 // Survey types
+export interface SurveyType {
+  id: number;
+  survey_type: string;
+}
+
 export interface Survey {
   id: number;
   project_id: number;
-  survey_type: string;
+  survey_type_id: number;
+  survey_type?: string;
   language_code: string;
   created_by: number;
   created_at: string;
@@ -175,7 +181,7 @@ export interface Survey {
 
 export interface SurveyCreate {
   project_id: number;
-  survey_type: string;
+  survey_type_id: number;
   language_code: string;
   planned_send_date: string;
 }

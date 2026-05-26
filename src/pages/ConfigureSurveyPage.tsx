@@ -149,7 +149,7 @@ export function ConfigureSurveyPage() {
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332' }}>
-              Configure Survey — {config.survey.survey_type}
+              Configure Survey — {config.survey.survey_type || 'Unknown'}
             </Typography>
             <StatusBadge status={config.survey.survey_status} />
           </Box>
