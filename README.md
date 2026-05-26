@@ -2,18 +2,24 @@
 
 React SPA for SurveyCore — multi-language survey management with role-based access control and Microsoft Entra ID SSO.
 
-**Deployed on:** [Azure Static Web Apps](https://happy-smoke-01be95e1e.7.azurestaticapps.net)
+**Deployed on:** Azure Static Web Apps (qa: [happy-smoke-01be95e1e.7.azurestaticapps.net](https://happy-smoke-01be95e1e.7.azurestaticapps.net))
 
 ## Stack
 
-| | |
-|---|---|
-| **Framework** | React 19 · TypeScript 6 · Vite 8 |
-| **UI** | Material-UI 9 |
-| **State** | Zustand 5 (auth) · TanStack Query 5 (server state) |
-| **Auth** | JWT · MSAL PKCE (Microsoft Entra ID) |
-| **Forms** | React Hook Form · Zod |
-| **Deployment** | Azure Static Web Apps (qa/main branches) |
+| Component | Version | Purpose |
+|-----------|---------|---------|
+| React | 19.2 | UI framework |
+| TypeScript | 6.0 | Type safety |
+| Vite | 8.0 | Build tool |
+| Material-UI (MUI) | 9.0 | Component library |
+| TanStack Query | 5.99 | Server state management |
+| Zustand | 5.0 | Auth state (Zustand) |
+| Axios | 1.15 | HTTP client |
+| React Router | 7.14 | Client-side routing |
+| React Hook Form | 7.73 | Form handling |
+| Zod | 4.3 | Schema validation |
+| MSAL | 5.8 / 5.3 | Microsoft authentication (PKCE) |
+| **Deployment** | Azure Static Web Apps | GitHub Actions CI/CD |
 
 ---
 
@@ -126,44 +132,85 @@ Copy `.env.example` to `.env` and configure:
 
 ## Deployment
 
+### Architecture
+
+```
+GitHub (main/qa/dev)
+    ↓
+GitHub Actions (`.github/workflows/deploy-azure.yml`)
+    ↓
+npm ci → npm lint → npm build (produces dist/)
+    ↓
+Azure Static Web Apps
+```
+
 ### Branch Strategy
 
-| Branch | Environment | URL |
-|---|---|---|
-| `dev` | Local | `http://localhost:5173` |
-| `qa` | QA | `https://happy-smoke-01be95e1e.7.azurestaticapps.net` |
-| `main` | Production | (separate Azure Static Web App) |
+| Branch | Environment | URL | Auto-Deploy |
+|--------|-----------|-----|-------------|
+| `dev` | Local | `http://localhost:5173` | No |
+| `qa` | QA | `https://happy-smoke-01be95e1e.7.azurestaticapps.net` | Yes (GitHub Actions) |
+| `main` | Production | `https://surveycore-web.azurestaticapps.net` | Yes (GitHub Actions) |
 
-### Push to Deploy
+### GitHub Actions Pipeline (`.github/workflows/deploy-azure.yml`)
 
-All deployments use GitHub Actions + Azure Static Web Apps:
+**Triggers on:**
+- Push to `qa` or `main`
+- Pull requests (lint only, no deploy)
+
+**Steps:**
+1. Checkout code
+2. Setup Node.js 20
+3. `npm ci` — install reproducible dependencies
+4. `npm run lint` — ESLint validation
+5. `npm run build` — compile to `dist/`
+6. Deploy to Azure Static Web Apps
+
+**GitHub Secrets (configure in Settings → Secrets):**
+- `VITE_AZURE_CLIENT_ID` — Entra ID app ID
+- `VITE_AZURE_TENANT_ID` — Entra ID tenant ID
+- `AZURE_STATIC_WEB_APPS_TOKEN_QA` — deployment token
+- `AZURE_STATIC_WEB_APPS_TOKEN_PRODUCTION` — deployment token
+
+### Manual Deployment
 
 ```bash
-# QA deployment
+# QA
 git checkout qa
 git merge dev
 git push origin qa
-# Workflow triggers: build, lint, deploy to Azure
+# → GitHub Actions auto-triggers in ~2-3 min
 
-# Production deployment
+# Production
 git checkout main
 git merge qa
 git push origin main
-# Workflow triggers: build, lint, deploy to Azure
+# → GitHub Actions auto-triggers in ~2-3 min
 ```
 
-**GitHub Secrets Required:**
-- `VITE_AZURE_CLIENT_ID` — Entra ID client
-- `VITE_AZURE_TENANT_ID` — Entra ID tenant
-- `AZURE_STATIC_WEB_APPS_TOKEN_QA` — Azure deployment token (qa branch)
-- `AZURE_STATIC_WEB_APPS_TOKEN_PRODUCTION` — Azure deployment token (main branch)
+### SPA Routing & Security
 
-### SPA Routing
+`staticwebapp.config.json` configured for:
+- **SPA routing:** Any unknown route → `/index.html`
+- **Exclusions:** `/assets/*`, `*.json`, `*.svg`, `*.ico` bypass fallback
+- **Caching:** Assets (1 year) vs HTML (no-cache)
+- **Security headers:** X-Content-Type-Options, X-Frame-Options, X-XSS-Protection
 
-`staticwebapp.config.json` configures Azure to:
-- Serve `/index.html` for all unknown routes (SPA fallback)
-- Exclude `/assets/*`, images, and manifests from fallback
-- Enable caching for assets, disable for HTML
+---
+
+## Verify Deployment
+
+1. **GitHub Actions:** GitHub → Actions → `deploy-azure.yml` → latest run
+   - ✅ All checks passed → site is live
+   - ❌ Build/lint failed → check output logs
+
+2. **Azure Portal:** portal.azure.com → Static Web Apps → `surveycore-web-qa` → Deployments
+   - View latest deployment status
+   - Download build logs if needed
+
+3. **Test URLs:**
+   - QA: `https://happy-smoke-01be95e1e.7.azurestaticapps.net`
+   - Try homepage → `/login` → should load
 
 ---
 
@@ -171,10 +218,37 @@ git push origin main
 
 | Issue | Solution |
 |---|---|
-| CORS error from frontend | Check `CORS_ORIGINS` in backend, include frontend URL |
-| 404 on `/login` | Ensure `staticwebapp.config.json` is deployed to Azure |
+| CORS error from frontend | Check backend `CORS_ORIGINS` includes frontend URL |
+| 404 on `/login` | Ensure `staticwebapp.config.json` deployed (SPA fallback) |
 | Token expired / redirect loop | Clear localStorage, reload page |
-| Microsoft SSO popup blocked | Ensure login triggered by user click (not auto) |
-| Build fails: `VITE_*` undefined | Check `.env` file exists with correct prefix |
+| Microsoft SSO popup blocked | Ensure login triggered by user click |
+| Build fails: `VITE_*` undefined | Check `.env` file exists with `VITE_` prefix |
+| "Too many files" Azure error | Ensure `.gitignore` excludes `node_modules/` |
+| Blank page on deployment | Check browser console, verify `VITE_API_BASE_URL` correct |
+| Lint errors block deploy | Fix ESLint issues or check `eslint.config.js` |
 
-See [CLAUDE.md](./CLAUDE.md) for development patterns and API integration details.
+---
+
+## Technology Stack Details
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| Node.js | 20+ | Runtime |
+| npm | 10+ | Package manager |
+| TypeScript | 6.0 | Type checking |
+| ESLint | 9.39 | Linting |
+| Vite | 8.0 | Fast build & HMR |
+
+---
+
+## Development Checklist
+
+- [ ] Node.js 20+ installed
+- [ ] `.env` configured with API URL & Azure credentials
+- [ ] `npm ci` completed
+- [ ] `npm run dev` running on port 5173
+- [ ] Backend API accessible at configured URL
+- [ ] Browser DevTools → Application → localStorage shows token after login
+- [ ] No CORS errors in console
+
+See [CLAUDE.md](./CLAUDE.md) for development patterns, component examples, and API integration details.

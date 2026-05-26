@@ -22,49 +22,77 @@ Backend esperado en `http://localhost:8000` (ver `.env`).
 ## Estructura de Archivos
 
 ```
-surveycore-web/src/
-├── main.tsx                 # Entrypoint React — QueryClient, Router, MsalProvider
-├── App.tsx                  # Rutas principales con React Router
-├── App.css / index.css
+surveycore-web/
+├── src/
+│   ├── main.tsx                 # React entry point — QueryClient, Router, MsalProvider
+│   ├── App.tsx                  # React Router configuration — todas las rutas
+│   ├── App.css / index.css      # Global styles
+│   │
+│   ├── api/                     # Axios HTTP clients
+│   │   ├── client.ts            # Axios instance + JWT interceptor + 401 handler
+│   │   ├── auth.ts              # login(), register(), getMe()
+│   │   ├── projects.ts          # CRUD de proyectos
+│   │   ├── surveys.ts           # CRUD de encuestas + generateLinks
+│   │   ├── questions.ts         # CRUD de preguntas + publish
+│   │   ├── results.ts           # getSurveyResults(), getControlTower()
+│   │   └── public.ts            # getSurveyByToken(), submitSurvey() — sin auth
+│   │
+│   ├── auth/
+│   │   └── msalConfig.ts        # MSAL config (PKCE, tenants, redirect)
+│   │
+│   ├── components/              # Reusable components
+│   │   ├── NavBar.tsx           # Top nav + user menu + logout
+│   │   ├── ProtectedRoute.tsx   # Auth guard — redirect /login si no token
+│   │   ├── PageWrapper.tsx      # Layout wrapper con padding/max-width
+│   │   └── StatusBadge.tsx      # MUI Chip — DRAFT/PUBLISHED/PENDING colors
+│   │
+│   ├── constants/               # Constantes globales (si existen)
+│   │   └── permissions.ts       # Códigos de permisos, roles
+│   │
+│   ├── hooks/                   # Custom React hooks
+│   │   ├── usePermission.ts     # Check user role/permission
+│   │   └── useDebounce.ts       # Debounce para searches
+│   │
+│   ├── pages/                   # Una componente por ruta
+│   │   ├── HomePage.tsx         # Landing / bienvenida
+│   │   ├── LoginPage.tsx        # Email/password + SSO Microsoft
+│   │   ├── ProjectsPage.tsx     # Lista de proyectos
+│   │   ├── SurveyListPage.tsx   # Encuestas de un proyecto
+│   │   ├── CreateSurveyPage.tsx # Formulario nueva encuesta
+│   │   ├── ConfigureSurveyPage.tsx  # Añadir preguntas + destinatarios + generar links
+│   │   ├── QuestionsPage.tsx    # Biblioteca de preguntas
+│   │   ├── CreateQuestionPage.tsx   # Crear pregunta (con traducciones)
+│   │   ├── QuestionDetailPage.tsx   # Ver + editar pregunta
+│   │   ├── TakeSurveyPage.tsx   # Encuesta pública (por token)
+│   │   ├── SurveyThanksPage.tsx # Agradecimiento post-submit
+│   │   ├── SurveyResultsPage.tsx    # Analytics de encuesta
+│   │   ├── ControlTowerPage.tsx # Dashboard global
+│   │   └── admin/               # Admin pages
+│   │       ├── UsersPage.tsx    # Gestión de usuarios
+│   │       └── RolesPage.tsx    # Gestión de roles
+│   │
+│   ├── store/
+│   │   └── authStore.ts         # Zustand: user, token, auth methods
+│   │
+│   └── types/
+│       └── index.ts             # TypeScript interfaces del dominio
 │
-├── api/                     # Clientes HTTP (Axios)
-│   ├── client.ts            # Instancia Axios + interceptores JWT/401
-│   ├── auth.ts              # login(), register(), getMe()
-│   ├── projects.ts          # getProjects(), getProject(), createProject()
-│   ├── surveys.ts           # getSurvey(), createSurvey(), addQuestion(), generateLinks()...
-│   ├── questions.ts         # getQuestions(), createQuestion(), publishQuestion()...
-│   ├── results.ts           # getSurveyResults(), getControlTower()
-│   └── public.ts            # getSurveyByToken(), submitSurvey()
+├── public/                      # Static assets (images, icons)
+│   ├── favicon.svg
+│   └── icons.svg
 │
-├── auth/
-│   └── msalConfig.ts        # Configuración MSAL (PKCE, scopes, redirect)
+├── .github/workflows/           # CI/CD pipelines
+│   └── deploy-azure.yml         # GitHub Actions → Azure Static Web Apps
 │
-├── components/              # Componentes reutilizables
-│   ├── NavBar.tsx           # Navegación + menú usuario + logout
-│   ├── ProtectedRoute.tsx   # Guard: redirige a /login si no autenticado
-│   ├── PageWrapper.tsx      # Layout wrapper con padding/max-width
-│   └── StatusBadge.tsx      # Badge de estado (DRAFT/PUBLISHED/PENDING/etc.)
-│
-├── pages/                   # Páginas (una por ruta)
-│   ├── HomePage.tsx         # Landing / bienvenida
-│   ├── LoginPage.tsx        # Formulario login + registro + botón Microsoft SSO
-│   ├── ProjectsPage.tsx     # Lista de proyectos del usuario
-│   ├── SurveyListPage.tsx   # Encuestas de un proyecto
-│   ├── CreateSurveyPage.tsx # Formulario nueva encuesta
-│   ├── ConfigureSurveyPage.tsx  # Añadir preguntas, destinatarios, generar links
-│   ├── QuestionsPage.tsx    # Biblioteca de preguntas
-│   ├── CreateQuestionPage.tsx   # Crear nueva pregunta
-│   ├── QuestionDetailPage.tsx   # Detalle + traducciones de una pregunta
-│   ├── TakeSurveyPage.tsx   # Encuesta pública (por token, sin auth)
-│   ├── SurveyThanksPage.tsx # Página de agradecimiento post-envío
-│   ├── SurveyResultsPage.tsx    # Resultados de una encuesta
-│   └── ControlTowerPage.tsx # Dashboard global (todas las encuestas)
-│
-├── store/
-│   └── authStore.ts         # Zustand: user, token, login(), logout(), setUser()
-│
-└── types/
-    └── index.ts             # Todas las interfaces TypeScript del dominio
+├── staticwebapp.config.json     # Azure SPA routing + security headers
+├── tsconfig.json / tsconfig.app.json / tsconfig.node.json
+├── vite.config.ts               # Vite build config
+├── eslint.config.js             # ESLint rules
+├── package.json / package-lock.json
+├── .env.example / .env.qa.example / .env.production.example
+├── CLAUDE.md                    # Este archivo
+├── README.md
+└── .gitignore
 ```
 
 ---
@@ -303,87 +331,93 @@ onSuccess: () => {
 
 ## Deployment a Azure Static Web Apps
 
-### 1. Crear la aplicación en Azure
-```bash
-# Desde Azure Portal:
-1. Crear "Static Web App" resource
-2. Conectar repositorio GitHub (autenticarse)
-3. Seleccionar rama (main/master)
-4. Framework: React
-5. App location: / (raíz)
-6. Output location: dist
-```
+### Configuración Actual
 
-### 2. Configuración automática
-El workflow de GitHub Actions en `.github/workflows/deploy.yml` se creará automáticamente. **Pero verificar que tenga:**
+**Azure Static Web App** conectada a repositorio GitHub con CI/CD automático:
 
-```yaml
-# Clave
-app_location: '/'        # Raíz del repo
-output_location: 'dist'  # Carpeta de build
-skip_app_build: true     # Usa tu workflow personalizado
-```
+| Rama | Entorno | URL |
+|------|---------|-----|
+| `dev` | Local | `http://localhost:5173` |
+| `qa` | QA | `https://happy-smoke-01be95e1e.7.azurestaticapps.net` |
+| `main` | Production | (separate Azure Static Web App) |
 
-### 3. Secretos y variables
-Configurar en Azure Portal → Static Web App → Configuration → Application settings:
+### 1. Workflow GitHub Actions (`.github/workflows/deploy-azure.yml`)
 
-| Variable | Valor |
-|----------|-------|
-| `VITE_API_BASE_URL` | URL backend (ej: `https://surveycore-api.azurewebsites.net`) |
-| `VITE_AZURE_CLIENT_ID` | Client ID de Entra ID |
-| `VITE_AZURE_TENANT_ID` | Tenant ID de Entra ID |
+Se ejecuta automáticamente en:
+- Push a `qa` o `main`
+- Pull requests (sin deployment)
 
-### 4. Rutas y fallback
-El `staticwebapp.config.json` ya está configurado para:
-- SPA routing: cualquier ruta desconocida → `index.html`
-- Assets estáticos: `/assets/*` excluidos del fallback
-- Sin cache: todos los archivos sin cache para SSR-like behavior
-
-### 5. Troubleshooting: "Too many static files"
-**Problema:** Azure rechaza el deployment porque detecta +60k archivos.
-
-**Solución:**
-- ✅ Usar workflow GitHub Actions (`.github/workflows/deploy.yml`) — ya incluido
-- ✅ Asegurarse de que `.gitignore` excluye `node_modules/`
-- ✅ No commitear `dist/` — se genera en el workflow
-- ✅ Usar `npm ci` en lugar de `npm install` para reproducibilidad
-
-**Si el error persiste:**
-```bash
-# Verificar que node_modules está en .gitignore
-grep "node_modules" .gitignore
-
-# Eliminar node_modules si fue commiteado
-git rm -r --cached node_modules
-git commit -m "Remove node_modules from tracking"
-
-# Hacer push
-git push origin main
-```
-
-### 6. Verificar deployment
-1. Ir a Azure Portal → Static Web App → Deployments
-2. Hacer clic en la ejecución más reciente
-3. Si tiene estado ✅ **Build Succeeded**, el sitio está live
-4. Si tiene error ❌, hacer clic en el workflow run en GitHub para ver logs
-
----
-
-## Workflow GitHub Actions
-
-Localización: `.github/workflows/deploy.yml`
-
-**Qué hace:**
-1. Checkout del código
+**Pipeline:**
+1. Checkout código
 2. Setup Node.js 20
 3. `npm ci` — instala dependencias reproducibles
 4. `npm run lint` — valida TypeScript
 5. `npm run build` — compila a `dist/`
-6. Publica a Azure Static Web Apps
+6. Deploy a Azure Static Web Apps
 
-**Solo se ejecuta:**
-- Pushes a `main` o `master`
-- PRs (para validación, no deployment)
+### 2. Secretos GitHub requeridos
+
+Configurar en GitHub → Settings → Secrets and variables:
+
+| Secret | Valor |
+|--------|-------|
+| `VITE_AZURE_CLIENT_ID` | Client ID de Entra ID |
+| `VITE_AZURE_TENANT_ID` | Tenant ID de Entra ID |
+| `AZURE_STATIC_WEB_APPS_TOKEN_QA` | Token deployment QA |
+| `AZURE_STATIC_WEB_APPS_TOKEN_PRODUCTION` | Token deployment Production |
+
+### 3. Variables de entorno por rama
+
+Configurar en Azure Portal → Static Web App → Configuration → Application settings:
+
+| Variable | QA | Production |
+|----------|----|----|
+| `VITE_API_BASE_URL` | `https://surveycore-api-qa.azurewebsites.net` | `https://surveycore-api.azurewebsites.net` |
+| `VITE_AZURE_CLIENT_ID` | ID de Entra ID | ID de Entra ID |
+| `VITE_AZURE_TENANT_ID` | Tenant ID | Tenant ID |
+
+### 4. SPA Routing & Security
+
+`staticwebapp.config.json` configurado para:
+
+**Routing:**
+- SPA fallback: cualquier ruta desconocida → `index.html` (excepto assets)
+- Exclusiones: `/assets/*`, `*.json`, `*.svg`, `*.ico` no redirigen
+
+**Caching:**
+- Assets (`/assets/*`): 1 año de cache (immutable)
+- HTML/JS/CSS: sin cache (`no-cache, no-store, must-revalidate`)
+
+**Headers de seguridad:**
+- `X-Content-Type-Options: nosniff` — previene MIME sniffing
+- `X-Frame-Options: DENY` — previene clickjacking
+- `X-XSS-Protection: 1; mode=block` — protege contra XSS
+
+### 5. Despliegue Manual
+
+```bash
+# QA deployment
+git checkout qa
+git merge dev
+git push origin qa
+# → GitHub Actions auto-triggers build & deploy
+
+# Production deployment
+git checkout main
+git merge qa
+git push origin main
+# → GitHub Actions auto-triggers build & deploy
+```
+
+### 6. Verificar deployment
+
+1. GitHub → Actions → workflow run de rama
+2. Si ✅ **Build succeeded**: deployment completó
+3. Si ❌ error: ver logs en GitHub Actions → step-by-step output
+
+**Links útiles:**
+- QA: `https://happy-smoke-01be95e1e.7.azurestaticapps.net`
+- Azure Portal: `portal.azure.com` → Static Web Apps → deployments
 
 ---
 | Ruta no cargada | Verificar `Route` en `App.tsx` y que el componente esté importado |
