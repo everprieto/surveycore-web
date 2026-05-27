@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { questionsApi } from '../api/questions';
+import { surveysApi } from '../api/surveys';
 import { StatusBadge } from '../components/StatusBadge';
 import { PageWrapper } from '../components/PageWrapper';
 import type { Question } from '../types';
@@ -16,6 +17,11 @@ export function QuestionsPage() {
   const { data: questions, isLoading, error } = useQuery<Question[]>({
     queryKey: ['questions'],
     queryFn: questionsApi.getAll,
+  });
+
+  const { data: surveyTypes = [] } = useQuery({
+    queryKey: ['survey-types'],
+    queryFn: () => surveysApi.getSurveyTypes(),
   });
 
   const publish = useMutation({
@@ -51,7 +57,7 @@ export function QuestionsPage() {
           <Table>
             <TableHead sx={{ bgcolor: '#1a2332' }}>
               <TableRow>
-                {['Logical Code', 'Answer Type', 'Status', 'Translations', 'Options', 'Actions'].map((h) => (
+                {['Logical Code', 'Survey Type', 'Answer Type', 'Status', 'Translations', 'Options', 'Actions'].map((h) => (
                   <TableCell key={h} sx={{ color: 'white', fontWeight: 600 }}>{h}</TableCell>
                 ))}
               </TableRow>
@@ -59,15 +65,18 @@ export function QuestionsPage() {
             <TableBody>
               {questions.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: 'text.secondary' }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4, color: 'text.secondary' }}>
                     No questions yet — create your first one above
                   </TableCell>
                 </TableRow>
               )}
-              {questions.map((q) => (
+              {questions.map((q) => {
+                const surveyType = surveyTypes.find((st) => st.id === q.survey_type_id);
+                return (
                 <TableRow key={q.id} hover>
-                  <TableCell sx={{ fontWeight: 600 }}>{q.logical_code}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{q.logical_code}</TableCell>                  
                   <TableCell><StatusBadge status={q.answer_type} /></TableCell>
+                  <TableCell>{surveyType?.survey_type ?? '—'}</TableCell>
                   <TableCell><StatusBadge status={q.status} /></TableCell>
                   <TableCell>{(q as Partial<{ translations: unknown[]; options: unknown[] }>).translations?.length ?? '—'}</TableCell>
                   <TableCell>{(q as Partial<{ translations: unknown[]; options: unknown[] }>).options?.length ?? '—'}</TableCell>
@@ -105,7 +114,8 @@ export function QuestionsPage() {
                     </Box>
                   </TableCell>
                 </TableRow>
-              ))}
+              );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

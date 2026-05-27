@@ -79,6 +79,7 @@ export interface AuthToken {
 // Question types
 export interface Question {
   id: number;
+  survey_type_id: number;
   logical_code: string;
   status: string;
   answer_type: string;
@@ -106,6 +107,7 @@ export interface QuestionOption {
 }
 
 export interface QuestionCreate {
+  survey_type_id: number;
   logical_code: string;
   answer_type: string;
   question_text: string;
