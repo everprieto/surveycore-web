@@ -111,8 +111,9 @@ export function NavBar() {
                         anchorEl={activeSubmenu === label ? submenuAnchor : null}
                         open={activeSubmenu === label}
                         onClose={() => setActiveSubmenu(null)}
-                        onMouseLeave={() => setActiveSubmenu(null)}
-                        MenuListProps={{ onMouseLeave: () => setActiveSubmenu(null) }}
+                        slotProps={{
+                          paper: { onMouseLeave: () => setActiveSubmenu(null) }
+                        }}
                       >
                         {submenu.map(({ label: sublabel, to: subto }) => (
                           <MenuItem key={subto} onClick={() => {
