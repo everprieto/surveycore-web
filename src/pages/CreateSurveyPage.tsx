@@ -136,7 +136,7 @@ export function CreateSurveyPage() {
             <Button
               variant="outlined"
               sx={{ textTransform: 'none' }}
-              onClick={() => navigate(id ? `/projects/${id}/surveys` : '/projects')}
+              onClick={() => navigate(-1)}
             >
               Cancel
             </Button>

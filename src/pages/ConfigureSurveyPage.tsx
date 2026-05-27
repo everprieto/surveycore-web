@@ -167,7 +167,7 @@ export function ConfigureSurveyPage() {
           <Button
             variant="outlined"
             sx={{ textTransform: 'none' }}
-            onClick={() => navigate(`/projects/${config.survey.project_id}/surveys`)}
+            onClick={() => navigate(config.survey.project_id ? `/projects/${config.survey.project_id}/surveys` : '/surveys/consult')}
           >
             ← All Surveys
           </Button>

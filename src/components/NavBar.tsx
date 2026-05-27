@@ -23,6 +23,7 @@ const NAV_LINKS_CONFIG: NavLink[] = [
   { label: 'Questions',     to: '/questions',     perm: 'project.view' },
   { label: 'Survey Management', perm: 'survey.create', submenu: [
     { label: 'Create Survey',  to: '/surveys/create',     perm: 'survey.create' },
+    { label: 'Consult Survey', to: '/surveys/consult',    perm: 'survey.create' },
     { label: 'Projects',       to: '/projects',           perm: 'project.view' },
     { label: 'Control Tower',  to: '/control-tower',      perm: 'results.view' },
   ]},

@@ -59,6 +59,11 @@ export const surveysApi = {
     const response = await apiClient.get<ProjectSurveyRow[]>(`/results/project/${projectId}/surveys`);
     return response.data;
   },
+
+  getUserSurveys: async (): Promise<UserSurveyRow[]> => {
+    const response = await apiClient.get<UserSurveyRow[]>(`/results/user/surveys`);
+    return response.data;
+  },
 };
 
 // Matches backend CompletionStats schema
@@ -71,4 +76,8 @@ export interface ProjectSurveyRow {
   total_sent: number;
   total_completed: number;
   last_response_at?: string;
+}
+
+export interface UserSurveyRow extends ProjectSurveyRow {
+  project_name?: string | null;
 }
