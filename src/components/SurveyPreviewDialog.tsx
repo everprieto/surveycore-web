@@ -170,6 +170,7 @@ export function SurveyPreviewDialog({ surveyId, surveyType, language, open, onCl
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
                   <Typography variant="h6" sx={{ fontWeight: 700, color: '#1a2332', lineHeight: 1.3, flexGrow: 1 }}>
                     {i + 1}. {q.question_text}
+                    {q.is_required && <span style={{ color: '#d32f2f', marginLeft: '4px' }}>*</span>}
                   </Typography>
                   <Chip
                     label={q.answer_type}

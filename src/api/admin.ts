@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { AdminUser, AdminAssignment, PermissionItem, RoleDetail, AssignmentDetail, ImpersonateResponse } from '../types';
+import type { AdminUser, AdminAssignment, PermissionItem, RoleDetail, AssignmentDetail, ImpersonateResponse, LegalEntity, UserLegalEntityRow } from '../types';
 
 export const adminApi = {
 
@@ -66,4 +66,23 @@ export const adminApi = {
 
   setRolePermissions: (roleId: number, permissionCodes: string[]): Promise<RoleDetail> =>
     apiClient.put(`/admin/roles/${roleId}/permissions`, { permissions: permissionCodes }).then((r) => r.data),
+
+  // ── Legal Entities ─────────────────────────────────────────────────────────
+  getLegalEntities: (): Promise<LegalEntity[]> =>
+    apiClient.get('/admin/legal-entities').then((r) => r.data),
+
+  createLegalEntity: (name: string): Promise<LegalEntity> =>
+    apiClient.post('/admin/legal-entities', { name }).then((r) => r.data),
+
+  deleteLegalEntity: (id: number): Promise<void> =>
+    apiClient.delete(`/admin/legal-entities/${id}`).then(() => undefined),
+
+  getUserLegalEntities: (): Promise<UserLegalEntityRow[]> =>
+    apiClient.get('/admin/user-legal-entities').then((r) => r.data),
+
+  createUserLegalEntity: (userId: number, legalEntityId: number): Promise<UserLegalEntityRow> =>
+    apiClient.post('/admin/user-legal-entities', { user_id: userId, legal_entity_id: legalEntityId }).then((r) => r.data),
+
+  deleteUserLegalEntity: (id: number): Promise<void> =>
+    apiClient.delete(`/admin/user-legal-entities/${id}`).then(() => undefined),
 };

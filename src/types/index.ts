@@ -79,6 +79,7 @@ export interface AuthToken {
 // Question types
 export interface Question {
   id: number;
+  survey_type_id: number;
   logical_code: string;
   status: string;
   answer_type: string;
@@ -106,6 +107,7 @@ export interface QuestionOption {
 }
 
 export interface QuestionCreate {
+  survey_type_id: number;
   logical_code: string;
   answer_type: string;
   question_text: string;
@@ -119,6 +121,11 @@ export interface Project {
   project_name: string;
   client_name: string;
   cost_center: string;
+  client_manager_email?: string;
+  delivery_manager_email?: string;
+  project_head_email?: string;
+  legal_entity_id?: number;
+  legal_entity_name?: string;
   manager_id: number;
   start_date: string;
   end_date?: string;
@@ -147,16 +154,26 @@ export interface ProjectCreate {
   project_name: string;
   client_name: string;
   cost_center: string;
+  client_manager_email?: string;
+  delivery_manager_email?: string;
+  project_head_email?: string;
+  legal_entity_id?: number;
   start_date: string;
   end_date?: string;
   status?: string;
 }
 
 // Survey types
+export interface SurveyType {
+  id: number;
+  survey_type: string;
+}
+
 export interface Survey {
   id: number;
-  project_id: number;
-  survey_type: string;
+  project_id?: number | null;
+  survey_type_id: number;
+  survey_type?: string;
   language_code: string;
   created_by: number;
   created_at: string;
@@ -165,8 +182,8 @@ export interface Survey {
 }
 
 export interface SurveyCreate {
-  project_id: number;
-  survey_type: string;
+  project_id?: number | null;
+  survey_type_id: number;
   language_code: string;
   planned_send_date: string;
 }
@@ -176,6 +193,7 @@ export interface SurveyQuestion {
   survey_id: number;
   master_question_id: number;
   display_order: number;
+  is_required: boolean;
 }
 
 export interface Recipient {
@@ -212,12 +230,20 @@ export interface SurveyConfig {
   access_links: AccessLink[];
 }
 
+export interface SendEmailResponse {
+  success_count: number;
+  failed_count: number;
+  total: number;
+  errors: string[];
+}
+
 // Public survey taking
 export interface QuestionForSurvey {
   sq_id: number;
   answer_type: string;
   question_text: string;
   options: { id: number; text: string }[];
+  is_required: boolean;
 }
 
 export interface SurveyTakeData {
@@ -303,4 +329,19 @@ export interface ControlTowerParams {
   language_code?: string;
   sort_by?: string;
   sort_dir?: 'asc' | 'desc';
+}
+
+// Admin — Legal Entities
+export interface LegalEntity {
+  id: number;
+  name: string;
+}
+
+export interface UserLegalEntityRow {
+  id: number;
+  user_id: number;
+  user_name: string;
+  user_email: string;
+  legal_entity_id: number;
+  legal_entity_name: string;
 }

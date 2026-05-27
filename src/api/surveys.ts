@@ -1,7 +1,12 @@
 import { apiClient } from './client';
-import type { Survey, SurveyCreate, SurveyConfig, RecipientCreate, SurveyTakeData } from '../types';
+import type { Survey, SurveyCreate, SurveyConfig, RecipientCreate, SurveyTakeData, SendEmailResponse, SurveyType } from '../types';
 
 export const surveysApi = {
+  getSurveyTypes: async (): Promise<SurveyType[]> => {
+    const response = await apiClient.get<SurveyType[]>('/surveys/types');
+    return response.data;
+  },
+
   create: async (data: SurveyCreate): Promise<Survey> => {
     const response = await apiClient.post<Survey>('/surveys/', data);
     return response.data;
@@ -20,6 +25,10 @@ export const surveysApi = {
     await apiClient.delete(`/surveys/${surveyId}/questions/${sqId}`);
   },
 
+  updateQuestion: async (surveyId: number, sqId: number, data: { is_required: boolean }): Promise<void> => {
+    await apiClient.patch(`/surveys/${surveyId}/questions/${sqId}`, data);
+  },
+
   addRecipient: async (surveyId: number, data: RecipientCreate): Promise<void> => {
     await apiClient.post(`/surveys/${surveyId}/recipients`, data);
   },
@@ -32,6 +41,15 @@ export const surveysApi = {
     await apiClient.post(`/surveys/${surveyId}/generate-links`);
   },
 
+  sendEmails: async (surveyId: number, recipientIds?: number[]): Promise<SendEmailResponse> => {
+    const body: { recipient_ids?: number[] } = {};
+    if (recipientIds !== undefined) {
+      body.recipient_ids = recipientIds;
+    }
+    const response = await apiClient.post<SendEmailResponse>(`/surveys/${surveyId}/send-emails`, body);
+    return response.data;
+  },
+
   getPreview: async (surveyId: number): Promise<SurveyTakeData> => {
     const response = await apiClient.get<SurveyTakeData>(`/surveys/${surveyId}/preview`);
     return response.data;
@@ -39,6 +57,11 @@ export const surveysApi = {
 
   getProjectSurveys: async (projectId: number): Promise<ProjectSurveyRow[]> => {
     const response = await apiClient.get<ProjectSurveyRow[]>(`/results/project/${projectId}/surveys`);
+    return response.data;
+  },
+
+  getUserSurveys: async (): Promise<UserSurveyRow[]> => {
+    const response = await apiClient.get<UserSurveyRow[]>(`/results/user/surveys`);
     return response.data;
   },
 };
@@ -53,4 +76,8 @@ export interface ProjectSurveyRow {
   total_sent: number;
   total_completed: number;
   last_response_at?: string;
+}
+
+export interface UserSurveyRow extends ProjectSurveyRow {
+  project_name?: string | null;
 }

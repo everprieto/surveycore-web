@@ -119,6 +119,21 @@ export function TakeSurveyPage() {
     enabled: !!token,
   });
 
+  const validateAnswers = () => {
+    const requiredQuestions = (data?.questions ?? []).filter((q) => q.is_required);
+    const unanswered = requiredQuestions.filter((q) => {
+      const val = answers[q.sq_id] ?? '';
+      if (q.answer_type === 'MULTI_SELECT') {
+        return !Array.isArray(val) || val.length === 0;
+      }
+      return !val || (typeof val === 'string' && val.trim() === '');
+    });
+    return unanswered;
+  };
+
+  const unansweredRequired = validateAnswers();
+  const canSubmit = unansweredRequired.length === 0;
+
   const submit = useMutation({
     mutationFn: () => {
       const payload = {
@@ -169,11 +184,18 @@ export function TakeSurveyPage() {
 
         {submitError && <Alert severity="error" sx={{ mb: 3 }}>{submitError}</Alert>}
 
-        <form onSubmit={(e) => { e.preventDefault(); submit.mutate(); }}>
+        {!canSubmit && (
+          <Alert severity="warning" sx={{ mb: 3 }}>
+            Please answer all required fields (marked with <span style={{ color: '#d32f2f', fontWeight: 600 }}>*</span>) before submitting.
+          </Alert>
+        )}
+
+        <form onSubmit={(e) => { e.preventDefault(); if (canSubmit) submit.mutate(); }}>
           {data.questions.map((q, i) => (
             <Paper key={q.sq_id} elevation={2} sx={{ p: 3, mb: 3 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2, color: '#1a2332' }}>
                 {i + 1}. {q.question_text}
+                {q.is_required && <span style={{ color: '#d32f2f', marginLeft: '4px' }}>*</span>}
               </Typography>
               <QuestionField
                 question={q}
@@ -188,7 +210,7 @@ export function TakeSurveyPage() {
               type="submit"
               variant="contained"
               size="large"
-              disabled={submit.isPending}
+              disabled={submit.isPending || !canSubmit}
               sx={{ bgcolor: '#c8102e', px: 6, textTransform: 'none', fontSize: '1rem' }}
             >
               {submit.isPending ? 'Submitting...' : 'Submit Survey'}

@@ -20,6 +20,7 @@ const QuestionDetailPage = lazy(() => import('./pages/QuestionDetailPage').then(
 const ProjectsPage = lazy(() => import('./pages/ProjectsPage').then(m => ({ default: m.ProjectsPage })));
 const SurveyListPage = lazy(() => import('./pages/SurveyListPage').then(m => ({ default: m.SurveyListPage })));
 const CreateSurveyPage = lazy(() => import('./pages/CreateSurveyPage').then(m => ({ default: m.CreateSurveyPage })));
+const ConsultSurveyPage = lazy(() => import('./pages/ConsultSurveyPage').then(m => ({ default: m.ConsultSurveyPage })));
 const ConfigureSurveyPage = lazy(() => import('./pages/ConfigureSurveyPage').then(m => ({ default: m.ConfigureSurveyPage })));
 const SurveyResultsPage = lazy(() => import('./pages/SurveyResultsPage').then(m => ({ default: m.SurveyResultsPage })));
 const ControlTowerPage = lazy(() => import('./pages/ControlTowerPage').then(m => ({ default: m.ControlTowerPage })));
@@ -142,6 +143,8 @@ function AppRoutes() {
       <Route path="/projects" element={<ProtectedRoute requiredPermission="project.view"><Suspense fallback={<PageLoader />}><ProjectsPage /></Suspense></ProtectedRoute>} />
       <Route path="/projects/:projectId/surveys" element={<ProtectedRoute requiredPermission="project.view"><Suspense fallback={<PageLoader />}><SurveyListPage /></Suspense></ProtectedRoute>} />
       <Route path="/projects/:projectId/surveys/create" element={<ProtectedRoute requiredPermission="survey.create"><Suspense fallback={<PageLoader />}><CreateSurveyPage /></Suspense></ProtectedRoute>} />
+      <Route path="/surveys/create" element={<ProtectedRoute requiredPermission="survey.create"><Suspense fallback={<PageLoader />}><CreateSurveyPage /></Suspense></ProtectedRoute>} />
+      <Route path="/surveys/consult" element={<ProtectedRoute requiredPermission="survey.create"><Suspense fallback={<PageLoader />}><ConsultSurveyPage /></Suspense></ProtectedRoute>} />
       <Route path="/surveys/:surveyId/configure" element={<ProtectedRoute requiredPermission="project.view"><Suspense fallback={<PageLoader />}><ConfigureSurveyPage /></Suspense></ProtectedRoute>} />
       <Route path="/surveys/:surveyId/results" element={<ProtectedRoute requiredPermission="results.view"><Suspense fallback={<PageLoader />}><SurveyResultsPage /></Suspense></ProtectedRoute>} />
       <Route path="/control-tower" element={<ProtectedRoute requiredPermission="results.view"><Suspense fallback={<PageLoader />}><ControlTowerPage /></Suspense></ProtectedRoute>} />
