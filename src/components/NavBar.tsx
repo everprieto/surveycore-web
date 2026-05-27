@@ -3,27 +3,42 @@ import {
   AppBar, Toolbar, Typography, Button, Box, Chip,
   IconButton, Drawer, List, ListItem, ListItemButton,
   ListItemText, Divider, useMediaQuery, useTheme,
+  Menu, MenuItem, Collapse,
 } from '@mui/material';
-import { Menu as MenuIcon, Logout as LogoutIcon } from '@mui/icons-material';
+import { Menu as MenuIcon, Logout as LogoutIcon, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useNavigate, NavLink, useLocation } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { useAuthStore } from '../store/authStore';
 import { ROLE_COLORS } from '../constants/roles';
 
-const NAV_LINKS_CONFIG = [
+interface NavLink {
+  label: string;
+  to?: string;
+  perm: string | null;
+  submenu?: NavLink[];
+}
+
+const NAV_LINKS_CONFIG: NavLink[] = [
   { label: 'Home',          to: '/home',          perm: null },
   { label: 'Questions',     to: '/questions',     perm: 'project.view' },
-  { label: 'Projects',      to: '/projects',      perm: 'project.view' },
-  { label: 'Control Tower', to: '/control-tower', perm: 'results.view' },
+  { label: 'Survey Management', perm: 'survey.create', submenu: [
+    { label: 'Create Survey',  to: '/surveys/create',     perm: 'survey.create' },
+    { label: 'Consult Survey', to: '/surveys/consult',    perm: 'survey.create' },
+    { label: 'Projects',       to: '/projects',           perm: 'project.view' },
+    { label: 'Control Tower',  to: '/control-tower',      perm: 'results.view' },
+  ]},
   { label: 'Users',         to: '/admin/users',   perm: 'users.manage' },
   { label: 'Roles',         to: '/admin/roles',   perm: 'roles.manage' },
-] as const;
+];
 
 
 export function NavBar() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [submenuAnchor, setSubmenuAnchor] = useState<null | HTMLElement>(null);
+  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
+  const [expandedMobile, setExpandedMobile] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { instance } = useMsal();
@@ -32,8 +47,10 @@ export function NavBar() {
   const hasPermission = useAuthStore((s) => s.hasPermission);
 
   const visibleLinks = useMemo(
-    () => NAV_LINKS_CONFIG.filter(({ perm }) => !perm || hasPermission(perm)),
-    // hasPermission is stable (Zustand selector), re-runs only when user changes
+    () => NAV_LINKS_CONFIG.filter(({ perm }) => !perm || hasPermission(perm)).map(link => ({
+      ...link,
+      submenu: link.submenu?.filter(({ perm }) => !perm || hasPermission(perm))
+    })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hasPermission]
   );
@@ -44,7 +61,7 @@ export function NavBar() {
     await instance.logoutRedirect({ postLogoutRedirectUri: '/login' });
   };
 
-  const isActive = (to: string) => location.pathname.startsWith(to);
+  const isActive = (to?: string) => to ? location.pathname.startsWith(to) : false;
 
   return (
     <>
@@ -72,21 +89,57 @@ export function NavBar() {
           {/* Desktop nav links */}
           {!isMobile && (
             <Box sx={{ display: 'flex', gap: 0.5, flexGrow: 1 }}>
-              {visibleLinks.map(({ label, to }) => (
-                <Button
-                  key={to}
-                  component={NavLink}
-                  to={to}
-                  sx={{
-                    color: isActive(to) ? '#c8102e' : 'rgba(255,255,255,0.85)',
-                    fontWeight: isActive(to) ? 700 : 400,
-                    textTransform: 'none',
-                    fontSize: '0.875rem',
-                    '&.active': { color: '#c8102e', fontWeight: 700 },
-                  }}
-                >
-                  {label}
-                </Button>
+              {visibleLinks.map(({ label, to, submenu }) => (
+                <Box key={label}>
+                  {submenu ? (
+                    <>
+                      <Button
+                        onMouseEnter={(e) => {
+                          setActiveSubmenu(label);
+                          setSubmenuAnchor(e.currentTarget);
+                        }}
+                        sx={{
+                          color: activeSubmenu === label ? '#c8102e' : 'rgba(255,255,255,0.85)',
+                          fontWeight: activeSubmenu === label ? 700 : 400,
+                          textTransform: 'none',
+                          fontSize: '0.875rem',
+                        }}
+                      >
+                        {label}
+                      </Button>
+                      <Menu
+                        anchorEl={activeSubmenu === label ? submenuAnchor : null}
+                        open={activeSubmenu === label}
+                        onClose={() => setActiveSubmenu(null)}
+                        onMouseLeave={() => setActiveSubmenu(null)}
+                        MenuListProps={{ onMouseLeave: () => setActiveSubmenu(null) }}
+                      >
+                        {submenu.map(({ label: sublabel, to: subto }) => (
+                          <MenuItem key={subto} onClick={() => {
+                            navigate(subto!);
+                            setActiveSubmenu(null);
+                          }}>
+                            {sublabel}
+                          </MenuItem>
+                        ))}
+                      </Menu>
+                    </>
+                  ) : (
+                    <Button
+                      component={NavLink}
+                      to={to!}
+                      sx={{
+                        color: isActive(to) ? '#c8102e' : 'rgba(255,255,255,0.85)',
+                        fontWeight: isActive(to) ? 700 : 400,
+                        textTransform: 'none',
+                        fontSize: '0.875rem',
+                        '&.active': { color: '#c8102e', fontWeight: 700 },
+                      }}
+                    >
+                      {label}
+                    </Button>
+                  )}
+                </Box>
               ))}
             </Box>
           )}
@@ -144,16 +197,45 @@ export function NavBar() {
 
           {/* Nav links */}
           <List sx={{ flexGrow: 1 }}>
-            {visibleLinks.map(({ label, to }) => (
-              <ListItem key={to} disablePadding>
-                <ListItemButton
-                  selected={isActive(to)}
-                  onClick={() => { navigate(to); setDrawerOpen(false); }}
-                  sx={{ '&.Mui-selected': { bgcolor: '#fff0f2', color: '#c8102e', fontWeight: 700 } }}
-                >
-                  <ListItemText primary={label} slotProps={{ primary: { sx: { fontSize: '0.9rem' } } }} />
-                </ListItemButton>
-              </ListItem>
+            {visibleLinks.map(({ label, to, submenu }) => (
+              <Box key={label}>
+                <ListItem disablePadding>
+                  <ListItemButton
+                    selected={to ? isActive(to) : false}
+                    onClick={() => {
+                      if (submenu) {
+                        setExpandedMobile(expandedMobile === label ? null : label);
+                      } else {
+                        navigate(to!);
+                        setDrawerOpen(false);
+                      }
+                    }}
+                    sx={{ '&.Mui-selected': { bgcolor: '#fff0f2', color: '#c8102e', fontWeight: 700 } }}
+                  >
+                    <ListItemText primary={label} slotProps={{ primary: { sx: { fontSize: '0.9rem' } } }} />
+                    {submenu && (expandedMobile === label ? <ExpandLess /> : <ExpandMore />)}
+                  </ListItemButton>
+                </ListItem>
+                {submenu && (
+                  <Collapse in={expandedMobile === label} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                      {submenu.map(({ label: sublabel, to: subto }) => (
+                        <ListItem key={subto} disablePadding sx={{ pl: 4 }}>
+                          <ListItemButton
+                            onClick={() => {
+                              navigate(subto!);
+                              setDrawerOpen(false);
+                              setExpandedMobile(null);
+                            }}
+                          >
+                            <ListItemText primary={sublabel} slotProps={{ primary: { sx: { fontSize: '0.9rem' } } }} />
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Collapse>
+                )}
+              </Box>
             ))}
           </List>
 

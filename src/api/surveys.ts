@@ -1,7 +1,12 @@
 import { apiClient } from './client';
-import type { Survey, SurveyCreate, SurveyConfig, RecipientCreate, SurveyTakeData, SendEmailResponse } from '../types';
+import type { Survey, SurveyCreate, SurveyConfig, RecipientCreate, SurveyTakeData, SendEmailResponse, SurveyType } from '../types';
 
 export const surveysApi = {
+  getSurveyTypes: async (): Promise<SurveyType[]> => {
+    const response = await apiClient.get<SurveyType[]>('/surveys/types');
+    return response.data;
+  },
+
   create: async (data: SurveyCreate): Promise<Survey> => {
     const response = await apiClient.post<Survey>('/surveys/', data);
     return response.data;
@@ -54,6 +59,11 @@ export const surveysApi = {
     const response = await apiClient.get<ProjectSurveyRow[]>(`/results/project/${projectId}/surveys`);
     return response.data;
   },
+
+  getUserSurveys: async (): Promise<UserSurveyRow[]> => {
+    const response = await apiClient.get<UserSurveyRow[]>(`/results/user/surveys`);
+    return response.data;
+  },
 };
 
 // Matches backend CompletionStats schema
@@ -66,4 +76,8 @@ export interface ProjectSurveyRow {
   total_sent: number;
   total_completed: number;
   last_response_at?: string;
+}
+
+export interface UserSurveyRow extends ProjectSurveyRow {
+  project_name?: string | null;
 }

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import {
-  Typography, Paper, Box, TextField, MenuItem, Button, Alert,
+  Typography, Paper, Box, TextField, MenuItem, Button, Alert, CircularProgress,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { questionsApi } from '../api/questions';
+import { surveysApi } from '../api/surveys';
 import { PageWrapper } from '../components/PageWrapper';
 
 const ANSWER_TYPES = ['RATING', 'YES_NO', 'TEXT', 'DROPDOWN', 'MULTI_SELECT'];
@@ -22,6 +23,12 @@ export function CreateQuestionPage() {
     enabled: isEdit,
   });
 
+  const { data: surveyTypes = [], isLoading: isLoadingTypes } = useQuery({
+    queryKey: ['survey-types'],
+    queryFn: () => surveysApi.getSurveyTypes(),
+  });
+
+  const [surveyTypeId, setSurveyTypeId] = useState<number>(0);
   const [logicalCode, setLogicalCode] = useState('');
   const [answerType, setAnswerType] = useState('RATING');
   const [questionText, setQuestionText] = useState('');
@@ -35,6 +42,7 @@ export function CreateQuestionPage() {
   useEffect(() => {
     if (existing && !initializedRef.current) {
       initializedRef.current = true;
+      setSurveyTypeId(existing.survey_type_id);
       setLogicalCode(existing.logical_code);
       setAnswerType(existing.answer_type);
       const defaultTranslation = existing.translations.find((t) => t.is_default_language);
@@ -45,6 +53,10 @@ export function CreateQuestionPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!surveyTypeId) {
+      setError('Please select a survey type');
+      return;
+    }
     setError('');
     setLoading(true);
     try {
@@ -54,9 +66,10 @@ export function CreateQuestionPage() {
 
       let result;
       if (isEdit && id) {
-        result = await questionsApi.update(id, { logical_code: logicalCode, answer_type: answerType, question_text: questionText });
+        result = await questionsApi.update(id, { survey_type_id: surveyTypeId, logical_code: logicalCode, answer_type: answerType, question_text: questionText });
       } else {
         result = await questionsApi.create({
+          survey_type_id: surveyTypeId,
           logical_code: logicalCode,
           answer_type: answerType,
           question_text: questionText,
@@ -79,7 +92,10 @@ export function CreateQuestionPage() {
 
       <Paper elevation={2} sx={{ p: 4 }}>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {isLoadingTypes && <CircularProgress />}
+        {!isLoadingTypes && (
         <form onSubmit={handleSubmit}>
+     
           <TextField
             label="Logical Code"
             fullWidth
@@ -101,6 +117,19 @@ export function CreateQuestionPage() {
           >
             {ANSWER_TYPES.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
           </TextField>
+               <TextField
+            select
+            label="Survey Type"
+            fullWidth
+            margin="normal"
+            value={surveyTypeId}
+            onChange={(e) => setSurveyTypeId(Number(e.target.value))}
+            required
+          >
+            <MenuItem value={0} disabled>-- Select a type --</MenuItem>
+            {surveyTypes.map((t) => <MenuItem key={t.id} value={t.id}>{t.survey_type}</MenuItem>)}
+          </TextField>
+
 
           <TextField
             label={isEdit ? 'Question Text (default language)' : 'Question Text (English)'}
@@ -145,6 +174,7 @@ export function CreateQuestionPage() {
             </Button>
           </Box>
         </form>
+        )}
       </Paper>
     </PageWrapper>
   );

@@ -132,7 +132,7 @@ export function ConfigureSurveyPage() {
 
   const selectedQIds = new Set(config.questions.map((q) => q.master_question_id));
   const availableQuestions = (allQuestions ?? []).filter(
-    (q) => q.status === 'PUBLISHED' && !selectedQIds.has(q.id),
+    (q) => q.status === 'PUBLISHED' && !selectedQIds.has(q.id) && q.survey_type_id === config.survey.survey_type_id,
   );
 
   const surveyUrl = (token: string) =>
@@ -149,7 +149,7 @@ export function ConfigureSurveyPage() {
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332' }}>
-              Configure Survey — {config.survey.survey_type}
+              Configure Survey — {config.survey.survey_type || 'Unknown'}
             </Typography>
             <StatusBadge status={config.survey.survey_status} />
           </Box>
@@ -167,7 +167,7 @@ export function ConfigureSurveyPage() {
           <Button
             variant="outlined"
             sx={{ textTransform: 'none' }}
-            onClick={() => navigate(`/projects/${config.survey.project_id}/surveys`)}
+            onClick={() => navigate(config.survey.project_id ? `/projects/${config.survey.project_id}/surveys` : '/surveys/consult')}
           >
             ← All Surveys
           </Button>
@@ -204,7 +204,9 @@ export function ConfigureSurveyPage() {
                   {availableQuestions.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={3} align="center" sx={{ color: 'text.secondary', py: 2 }}>
-                        All published questions added
+                        {allQuestions && allQuestions.filter((q) => q.survey_type_id === config.survey.survey_type_id && q.status === 'PUBLISHED').length === 0
+                          ? 'No published questions available for this survey type'
+                          : 'All published questions of this type are added'}
                       </TableCell>
                     </TableRow>
                   )}

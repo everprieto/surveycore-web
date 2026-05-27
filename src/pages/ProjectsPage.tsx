@@ -240,7 +240,7 @@ function ProjectAdminTab() {
                         {canCreate && (
                           <Button size="small" variant="contained"
                             sx={{ bgcolor: '#1a2332', textTransform: 'none', whiteSpace: 'nowrap' }}
-                            onClick={() => navigate(`/projects/${project.id}/surveys/create`)}>
+                            onClick={() => navigate(`/surveys/create?projectId=${project.id}`)}>
                             Create Survey
                           </Button>
                         )}

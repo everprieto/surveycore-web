@@ -79,6 +79,7 @@ export interface AuthToken {
 // Question types
 export interface Question {
   id: number;
+  survey_type_id: number;
   logical_code: string;
   status: string;
   answer_type: string;
@@ -106,6 +107,7 @@ export interface QuestionOption {
 }
 
 export interface QuestionCreate {
+  survey_type_id: number;
   logical_code: string;
   answer_type: string;
   question_text: string;
@@ -162,10 +164,16 @@ export interface ProjectCreate {
 }
 
 // Survey types
+export interface SurveyType {
+  id: number;
+  survey_type: string;
+}
+
 export interface Survey {
   id: number;
-  project_id: number;
-  survey_type: string;
+  project_id?: number | null;
+  survey_type_id: number;
+  survey_type?: string;
   language_code: string;
   created_by: number;
   created_at: string;
@@ -174,8 +182,8 @@ export interface Survey {
 }
 
 export interface SurveyCreate {
-  project_id: number;
-  survey_type: string;
+  project_id?: number | null;
+  survey_type_id: number;
   language_code: string;
   planned_send_date: string;
 }
