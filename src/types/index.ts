@@ -169,7 +169,7 @@ export interface SurveyType {
 
 export interface Survey {
   id: number;
-  project_id: number;
+  project_id?: number | null;
   survey_type_id: number;
   survey_type?: string;
   language_code: string;
@@ -180,7 +180,7 @@ export interface Survey {
 }
 
 export interface SurveyCreate {
-  project_id: number;
+  project_id?: number | null;
   survey_type_id: number;
   language_code: string;
   planned_send_date: string;

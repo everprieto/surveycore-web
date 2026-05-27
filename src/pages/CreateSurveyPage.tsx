@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Typography, Paper, Box, TextField, MenuItem, Button, Alert, CircularProgress,
 } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { projectsApi } from '../api/projects';
 import { surveysApi } from '../api/surveys';
@@ -12,12 +12,16 @@ const LANGUAGES = ['EN', 'ES', 'DEU', 'FR', 'PT'];
 
 export function CreateSurveyPage() {
   const navigate = useNavigate();
-  const { projectId } = useParams<{ projectId: string }>();
-  const id = Number(projectId);
+  const { projectId } = useParams<{ projectId?: string }>();
+  const [searchParams] = useSearchParams();
+
+  const queryProjectId = searchParams.get('projectId');
+  const id = projectId ? Number(projectId) : (queryProjectId ? Number(queryProjectId) : null);
 
   const { data: project } = useQuery({
     queryKey: ['project', id],
-    queryFn: () => projectsApi.getById(id),
+    queryFn: () => id ? projectsApi.getById(id) : Promise.resolve(null),
+    enabled: !!id,
   });
 
   const { data: surveyTypes = [], isLoading: isLoadingTypes } = useQuery({
@@ -25,6 +29,15 @@ export function CreateSurveyPage() {
     queryFn: () => surveysApi.getSurveyTypes(),
   });
 
+  const { data: projectsData, isLoading: isLoadingProjects } = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => projectsApi.getAll(),
+    enabled: !id,
+  });
+
+  const projects = projectsData?.items || [];
+
+  const [selectedProjectId, setSelectedProjectId] = useState<number>(id || 0);
   const [surveyTypeId, setSurveyTypeId] = useState<number>(0);
   const [language, setLanguage] = useState('EN');
   const [plannedDate, setPlannedDate] = useState('');
@@ -40,15 +53,16 @@ export function CreateSurveyPage() {
     setError('');
     setLoading(true);
     try {
+      const projectId = selectedProjectId || id || null;
       const survey = await surveysApi.create({
-        project_id: id,
+        project_id: projectId,
         survey_type_id: surveyTypeId,
         language_code: language,
         planned_send_date: plannedDate,
       });
       navigate(`/surveys/${survey.id}/configure`);
-    } catch {
-      setError('Failed to create survey. Please try again.');
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to create survey. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -67,9 +81,10 @@ export function CreateSurveyPage() {
 
       <Paper elevation={2} sx={{ p: 4 }}>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        {isLoadingTypes && <CircularProgress />}
-        {!isLoadingTypes && (
+        {(isLoadingTypes || isLoadingProjects) && <CircularProgress />}
+        {!isLoadingTypes && !isLoadingProjects && (
         <form onSubmit={handleSubmit}>
+ 
           <TextField
             select
             label="Survey Type"
@@ -105,6 +120,20 @@ export function CreateSurveyPage() {
             required
             slotProps={{ inputLabel: { shrink: true } }}
           />
+        
+            <TextField
+              select
+              label="Project (Optional)"
+              fullWidth
+              margin="normal"
+              value={selectedProjectId}
+              onChange={(e) => setSelectedProjectId(Number(e.target.value))}
+            >
+              <MenuItem value={0}>-- No project --</MenuItem>
+              {projects.map((p) => <MenuItem key={p.id} value={p.id}>{p.project_code} - {p.project_name}</MenuItem>)}
+            </TextField>
+      
+
 
           <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
             <Button
@@ -118,7 +147,7 @@ export function CreateSurveyPage() {
             <Button
               variant="outlined"
               sx={{ textTransform: 'none' }}
-              onClick={() => navigate(`/projects/${id}/surveys`)}
+              onClick={() => navigate(id ? `/projects/${id}/surveys` : '/projects')}
             >
               Cancel
             </Button>
