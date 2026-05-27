@@ -29,15 +29,7 @@ export function CreateSurveyPage() {
     queryFn: () => surveysApi.getSurveyTypes(),
   });
 
-  const { data: projectsData, isLoading: isLoadingProjects } = useQuery({
-    queryKey: ['projects'],
-    queryFn: () => projectsApi.getAll(),
-    enabled: !id,
-  });
-
-  const projects = projectsData?.items || [];
-
-  const [selectedProjectId, setSelectedProjectId] = useState<number>(id || 0);
+  const isProjectLocked = !!queryProjectId;
   const [surveyTypeId, setSurveyTypeId] = useState<number>(0);
   const [language, setLanguage] = useState('EN');
   const [plannedDate, setPlannedDate] = useState('');
@@ -53,9 +45,8 @@ export function CreateSurveyPage() {
     setError('');
     setLoading(true);
     try {
-      const projectId = selectedProjectId || id || null;
       const survey = await surveysApi.create({
-        project_id: projectId,
+        project_id: id || null,
         survey_type_id: surveyTypeId,
         language_code: language,
         planned_send_date: plannedDate,
@@ -81,8 +72,8 @@ export function CreateSurveyPage() {
 
       <Paper elevation={2} sx={{ p: 4 }}>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        {(isLoadingTypes || isLoadingProjects) && <CircularProgress />}
-        {!isLoadingTypes && !isLoadingProjects && (
+        {isLoadingTypes && <CircularProgress />}
+        {!isLoadingTypes && (
         <form onSubmit={handleSubmit}>
  
           <TextField
@@ -120,18 +111,16 @@ export function CreateSurveyPage() {
             required
             slotProps={{ inputLabel: { shrink: true } }}
           />
-        
+
+          {isProjectLocked && project && (
             <TextField
-              select
-              label="Project (Optional)"
+              label="Project"
               fullWidth
               margin="normal"
-              value={selectedProjectId}
-              onChange={(e) => setSelectedProjectId(Number(e.target.value))}
-            >
-              <MenuItem value={0}>-- No project --</MenuItem>
-              {projects.map((p) => <MenuItem key={p.id} value={p.id}>{p.project_code} - {p.project_name}</MenuItem>)}
-            </TextField>
+              value={`${project.project_code} - ${project.project_name}`}
+              disabled
+            />
+          )}
       
 
 
