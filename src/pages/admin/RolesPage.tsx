@@ -77,7 +77,7 @@ function RolesCrud() {
           System roles cannot be renamed or deleted.
         </Typography>
         <Button variant="contained" startIcon={<AddIcon />}
-          sx={{ bgcolor: '#1a2332', textTransform: 'none' }}
+          sx={{ bgcolor: 'var(--color-navy)', textTransform: 'none' }}
           onClick={() => { setCreateOpen(true); setErrorMsg(''); }}>
           New Role
         </Button>
@@ -88,7 +88,7 @@ function RolesCrud() {
       <Box sx={{ overflowX: 'auto' }}>
         <TableContainer component={Paper} elevation={2} sx={{ minWidth: 600 }}>
           <Table size="small">
-            <TableHead sx={{ bgcolor: '#1a2332' }}>
+            <TableHead sx={{ bgcolor: 'var(--color-navy)' }}>
               <TableRow>
                 {['Name', 'Description', 'Users', 'Permissions', 'Type', 'Actions'].map((h) => (
                   <TableCell key={h} sx={{ color: 'white', fontWeight: 700, whiteSpace: 'nowrap' }}>{h}</TableCell>
@@ -155,7 +155,7 @@ function RolesCrud() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => { setCreateOpen(false); setNewName(''); setNewDesc(''); }}>Cancel</Button>
-          <Button variant="contained" sx={{ bgcolor: '#1a2332' }}
+          <Button variant="contained" sx={{ bgcolor: 'var(--color-navy)' }}
             disabled={!newName.trim() || createMutation.isPending}
             onClick={() => createMutation.mutate()}>
             Create
@@ -290,7 +290,7 @@ function PermissionsTab() {
             const domPerms = allPerms.filter((p) => p.code.startsWith(domain + '.'));
             return (
               <Paper key={domain} elevation={1} sx={{ mb: 2, overflow: 'hidden' }}>
-                <Box sx={{ px: 2, py: 1, bgcolor: '#1a2332', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ px: 2, py: 1, bgcolor: 'var(--color-navy)', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="body2" sx={{ color: 'white', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     {domain}
                   </Typography>
@@ -357,7 +357,7 @@ export function RolesPage() {
 
   return (
     <PageWrapper>
-      <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a2332', mb: 2 }}>
+      <Typography variant="h5" sx={{ fontWeight: 700, color: 'var(--color-navy)', mb: 2 }}>
         Role & Permission Management
       </Typography>
 

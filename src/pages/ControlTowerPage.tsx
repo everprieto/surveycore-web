@@ -43,7 +43,7 @@ function SortHeader({
       sx={{
         color: 'white !important',
         '& .MuiTableSortLabel-icon': { color: 'rgba(255,255,255,0.5) !important' },
-        '&.Mui-active .MuiTableSortLabel-icon': { color: '#c8102e !important' },
+        '&.Mui-active .MuiTableSortLabel-icon': { color: 'var(--color-primary) !important' },
       }}
     >
       {label}
@@ -115,7 +115,7 @@ export function ControlTowerPage() {
     <PageWrapper maxWidth="xl">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332', fontSize: { xs: '1.5rem', md: '2.125rem' } }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-navy)', fontSize: { xs: '1.5rem', md: '2.125rem' } }}>
             Control Tower
           </Typography>
           {!isLoading && (
@@ -129,7 +129,7 @@ export function ControlTowerPage() {
 
       {/* KPI Strip — global totals (not filtered) */}
       <Box sx={{
-        bgcolor: '#1a2332', color: 'white', borderRadius: 2,
+        bgcolor: 'var(--color-navy)', color: 'white', borderRadius: 2,
         display: 'flex', p: { xs: 2, md: 3 }, gap: { xs: 3, md: 5 },
         mb: 3, flexWrap: 'wrap',
       }}>
@@ -145,7 +145,7 @@ export function ControlTowerPage() {
           { label: 'Global Rate', value: `${globalRate}%` },
         ].map(({ label, value }) => (
           <Box key={label} sx={{ minWidth: { xs: 80, md: 'auto' } }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#c8102e', fontSize: { xs: '1.5rem', md: '2.125rem' } }}>{value}</Typography>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-primary)', fontSize: { xs: '1.5rem', md: '2.125rem' } }}>{value}</Typography>
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: { xs: '0.75rem', md: '0.875rem' } }}>{label}</Typography>
           </Box>
         ))}
@@ -193,7 +193,7 @@ export function ControlTowerPage() {
       <Box sx={{ overflowX: 'auto', width: '100%' }}>
         <TableContainer component={Paper} elevation={2}>
           <Table size="small" sx={{ minWidth: 900 }}>
-            <TableHead sx={{ bgcolor: '#1a2332' }}>
+            <TableHead sx={{ bgcolor: 'var(--color-navy)' }}>
               <TableRow>
                 <TableCell sx={{ color: 'white', fontWeight: 600, width: 36 }}>#</TableCell>
                 <TableCell sx={{ color: 'white', fontWeight: 600 }}><SortHeader col="project_code" label="Project" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} /></TableCell>

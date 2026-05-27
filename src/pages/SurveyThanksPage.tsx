@@ -13,13 +13,13 @@ export function SurveyThanksPage() {
     >
       <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
         <Typography variant="h1" sx={{ mb: 2 }}>✅</Typography>
-        <Typography variant="h3" sx={{ fontWeight: 700, color: '#1a2332', mb: 2 }}>
+        <Typography variant="h3" sx={{ fontWeight: 700, color: 'var(--color-navy)', mb: 2 }}>
           Thank You!
         </Typography>
         <Typography variant="body1" color="text.secondary">
           Your survey response has been recorded. We appreciate your time and feedback.
         </Typography>
-        <Box sx={{ width: 60, height: 4, bgcolor: '#c8102e', mx: 'auto', mt: 3 }} />
+        <Box sx={{ width: 60, height: 4, bgcolor: 'var(--color-primary)', mx: 'auto', mt: 3 }} />
       </Container>
     </Box>
   );

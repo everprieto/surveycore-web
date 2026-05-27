@@ -65,7 +65,7 @@ export function NavBar() {
 
   return (
     <>
-      <AppBar position="static" sx={{ bgcolor: '#1a2332' }}>
+      <AppBar position="static" sx={{ bgcolor: 'var(--color-navy)' }}>
         <Toolbar sx={{ minHeight: { xs: 56, md: 64 } }}>
 
           {/* Brand */}
@@ -73,15 +73,15 @@ export function NavBar() {
             sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer', flexShrink: 0, mr: { xs: 1, md: 4 } }}
             onClick={() => navigate('/home')}
           >
-            <Box sx={{ width: 18, height: 18, bgcolor: '#c8102e', flexShrink: 0 }} />
+            <Box sx={{ width: 18, height: 18, bgcolor: '#d1d5db', flexShrink: 0 }} />
             <Box sx={{ lineHeight: 1, display: { xs: 'none', sm: 'block' } }}>
-              <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.12em', lineHeight: 1.3, display: 'block' }}>
+              <Typography sx={{ color: 'var(--color-text-light)', fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.12em', lineHeight: 1.3, display: 'block' }}>
                 GFT TECHNOLOGIES
               </Typography>
               
             </Box>
             <Box sx={{ width: '1px', height: 24, bgcolor: 'rgba(255,255,255,0.2)', mx: 0.5, display: { xs: 'none', sm: 'block' } }} />
-            <Typography sx={{ color: '#c8102e', fontWeight: 700, fontSize: { xs: '0.95rem', md: '1rem' } }}>
+            <Typography sx={{ color: 'var(--navbar-link-active)', fontWeight: 700, fontSize: { xs: '0.95rem', md: '1rem' } }}>
               Survey Core
             </Typography>
           </Box>
@@ -99,7 +99,7 @@ export function NavBar() {
                           setSubmenuAnchor(e.currentTarget);
                         }}
                         sx={{
-                          color: activeSubmenu === label ? '#c8102e' : 'rgba(255,255,255,0.85)',
+                          color: activeSubmenu === label ? 'var(--navbar-link-active)' : 'rgba(255,255,255,0.85)',
                           fontWeight: activeSubmenu === label ? 700 : 400,
                           textTransform: 'none',
                           fontSize: '0.875rem',
@@ -112,14 +112,51 @@ export function NavBar() {
                         open={activeSubmenu === label}
                         onClose={() => setActiveSubmenu(null)}
                         slotProps={{
-                          paper: { onMouseLeave: () => setActiveSubmenu(null) }
+                          paper: {
+                            onMouseLeave: () => setActiveSubmenu(null),
+                            sx: {
+                              bgcolor: 'var(--menu-bg)',
+                              borderRadius: 'var(--menu-border-radius)',
+                              marginTop: 'var(--menu-margin-top)',
+                              boxShadow: 'var(--menu-shadow)',
+                              border: 'none',
+                              minWidth: 'var(--menu-min-width)',
+                            }
+                          }
                         }}
+                        transformOrigin={{ horizontal: 'center', vertical: 'top' }}
+                        anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
                       >
                         {submenu.map(({ label: sublabel, to: subto }) => (
-                          <MenuItem key={subto} onClick={() => {
-                            navigate(subto!);
-                            setActiveSubmenu(null);
-                          }}>
+                          <MenuItem
+                            key={subto}
+                            onClick={() => {
+                              navigate(subto!);
+                              setActiveSubmenu(null);
+                            }}
+                            sx={{
+                              color: 'var(--menu-text) !important',
+                              fontSize: 'var(--menu-font-size)',
+                              padding: 'var(--menu-padding)',
+                              bgcolor: 'var(--menu-bg) !important',
+                              '&:hover': {
+                                bgcolor: 'var(--menu-hover-bg) !important',
+                                color: 'var(--menu-hover-text) !important',
+                              },
+                              '&.Mui-selected': {
+                                bgcolor: 'var(--menu-selected-bg) !important',
+                                color: 'var(--menu-selected-text) !important',
+                              },
+                              '&.Mui-selected:hover': {
+                                bgcolor: 'var(--menu-selected-hover-bg) !important',
+                                color: 'var(--menu-selected-hover-text) !important',
+                              },
+                              '&.Mui-focusVisible': {
+                                bgcolor: 'var(--menu-hover-bg) !important',
+                              },
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
                             {sublabel}
                           </MenuItem>
                         ))}
@@ -130,11 +167,11 @@ export function NavBar() {
                       component={NavLink}
                       to={to!}
                       sx={{
-                        color: isActive(to) ? '#c8102e' : 'rgba(255,255,255,0.85)',
+                        color: isActive(to) ? 'var(--navbar-link-active)' : 'rgba(255,255,255,0.85)',
                         fontWeight: isActive(to) ? 700 : 400,
                         textTransform: 'none',
                         fontSize: '0.875rem',
-                        '&.active': { color: '#c8102e', fontWeight: 700 },
+                        '&.active': { color: 'var(--navbar-link-active)', fontWeight: 700 },
                       }}
                     >
                       {label}
@@ -183,7 +220,7 @@ export function NavBar() {
         <Box sx={{ width: 260, display: 'flex', flexDirection: 'column', height: '100%' }}>
           {/* User info */}
           {user && (
-            <Box sx={{ bgcolor: '#1a2332', p: 2 }}>
+            <Box sx={{ bgcolor: 'var(--color-navy)', p: 2 }}>
               <Chip
                 label={user.role}
                 size="small"
@@ -211,7 +248,7 @@ export function NavBar() {
                         setDrawerOpen(false);
                       }
                     }}
-                    sx={{ '&.Mui-selected': { bgcolor: '#fff0f2', color: '#c8102e', fontWeight: 700 } }}
+                    sx={{ '&.Mui-selected': { bgcolor: 'var(--navbar-drawer-selected-bg)', color: 'var(--navbar-drawer-selected-color)', fontWeight: 700 } }}
                   >
                     <ListItemText primary={label} slotProps={{ primary: { sx: { fontSize: '0.9rem' } } }} />
                     {submenu && (expandedMobile === label ? <ExpandLess /> : <ExpandMore />)}
@@ -244,7 +281,7 @@ export function NavBar() {
 
           {/* Logout */}
           <ListItem disablePadding>
-            <ListItemButton onClick={handleLogout} sx={{ color: '#c8102e' }}>
+            <ListItemButton onClick={handleLogout} sx={{ color: 'var(--navbar-logout-color)' }}>
               <LogoutIcon sx={{ mr: 1, fontSize: 18 }} />
               <ListItemText primary={<Typography sx={{ fontSize: '0.9rem', fontWeight: 600 }}>Logout</Typography>} />
             </ListItemButton>

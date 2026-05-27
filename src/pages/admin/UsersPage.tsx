@@ -56,7 +56,7 @@ function UserManagementTab() {
       <Box sx={{ overflowX: 'auto' }}>
         <TableContainer component={Paper} elevation={2} sx={{ minWidth: 560 }}>
           <Table size="small">
-            <TableHead sx={{ bgcolor: '#1a2332' }}>
+            <TableHead sx={{ bgcolor: 'var(--color-navy)' }}>
               <TableRow>
                 {['Name', 'Email', 'Role', 'View as'].map((h) => (
                   <TableCell key={h} sx={{ color: 'white', fontWeight: 700, whiteSpace: 'nowrap' }}>{h}</TableCell>
@@ -209,7 +209,7 @@ function LegalEntityTab() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h6" sx={{ fontWeight: 700 }}>Legal Entities</Typography>
           <Button variant="contained" startIcon={<AddIcon />}
-            sx={{ bgcolor: '#1a2332', textTransform: 'none' }}
+            sx={{ bgcolor: 'var(--color-navy)', textTransform: 'none' }}
             onClick={() => { setErrorMsg(''); setLeCreateOpen(true); }}>
             New Legal Entity
           </Button>
@@ -218,7 +218,7 @@ function LegalEntityTab() {
         <Box sx={{ overflowX: 'auto' }}>
           <TableContainer component={Paper} elevation={2} sx={{ minWidth: 400 }}>
             <Table size="small">
-              <TableHead sx={{ bgcolor: '#1a2332' }}>
+              <TableHead sx={{ bgcolor: 'var(--color-navy)' }}>
                 <TableRow>
                   <TableCell sx={{ color: 'white', fontWeight: 700 }}>Name</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 700 }}>Actions</TableCell>
@@ -258,7 +258,7 @@ function LegalEntityTab() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h6" sx={{ fontWeight: 700 }}>User ↔ Legal Entity</Typography>
           <Button variant="contained" startIcon={<AddIcon />}
-            sx={{ bgcolor: '#1a2332', textTransform: 'none' }}
+            sx={{ bgcolor: 'var(--color-navy)', textTransform: 'none' }}
             onClick={() => { setErrorMsg(''); setUleLinkOpen(true); }}>
             Link User
           </Button>
@@ -266,7 +266,7 @@ function LegalEntityTab() {
         <Box sx={{ overflowX: 'auto' }}>
           <TableContainer component={Paper} elevation={2} sx={{ minWidth: 500 }}>
             <Table size="small">
-              <TableHead sx={{ bgcolor: '#1a2332' }}>
+              <TableHead sx={{ bgcolor: 'var(--color-navy)' }}>
                 <TableRow>
                   <TableCell sx={{ color: 'white', fontWeight: 700 }}>User</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 700 }}>Email</TableCell>
@@ -401,7 +401,7 @@ export function UsersPage() {
 
   return (
     <PageWrapper>
-      <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a2332', mb: 2 }}>
+      <Typography variant="h5" sx={{ fontWeight: 700, color: 'var(--color-navy)', mb: 2 }}>
         User Administration
       </Typography>
 

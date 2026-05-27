@@ -148,7 +148,7 @@ export function ConfigureSurveyPage() {
             Survey #{id} · {config.survey.language_code}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332' }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-navy)' }}>
               Configure Survey — {config.survey.survey_type || 'Unknown'}
             </Typography>
             <StatusBadge status={config.survey.survey_status} />
@@ -186,7 +186,7 @@ export function ConfigureSurveyPage() {
         <Grid size={{ xs: 12, md: 6 }}>
           {/* Available questions */}
           <Paper elevation={2} sx={{ mb: 3 }}>
-            <Box sx={{ p: 2, bgcolor: '#1a2332', borderRadius: '4px 4px 0 0' }}>
+            <Box sx={{ p: 2, bgcolor: 'var(--color-navy)', borderRadius: '4px 4px 0 0' }}>
               <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>
                 Available Published Questions
               </Typography>
@@ -219,7 +219,7 @@ export function ConfigureSurveyPage() {
                           <Button
                             size="small"
                             variant="contained"
-                            sx={{ bgcolor: '#1a2332', minWidth: 0, px: 1.5, textTransform: 'none' }}
+                            sx={{ bgcolor: 'var(--color-navy)', minWidth: 0, px: 1.5, textTransform: 'none' }}
                             onClick={() => addQuestion.mutate(q.id)}
                             disabled={isSurveyLocked}
                           >
@@ -236,7 +236,7 @@ export function ConfigureSurveyPage() {
 
           {/* Selected questions */}
           <Paper elevation={2}>
-            <Box sx={{ p: 2, bgcolor: '#c8102e', borderRadius: '4px 4px 0 0' }}>
+            <Box sx={{ p: 2, bgcolor: 'var(--color-primary)', borderRadius: '4px 4px 0 0' }}>
               <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>
                 Selected Questions ({config.questions.length})
               </Typography>
@@ -306,7 +306,7 @@ export function ConfigureSurveyPage() {
         <Grid size={{ xs: 12, md: 6 }}>
           {/* Recipients table */}
           <Paper elevation={2} sx={{ mb: 3 }}>
-            <Box sx={{ p: 2, bgcolor: '#1a2332', borderRadius: '4px 4px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box sx={{ p: 2, bgcolor: 'var(--color-navy)', borderRadius: '4px 4px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>
                 Recipients ({config.recipients.length})
               </Typography>
@@ -389,7 +389,7 @@ export function ConfigureSurveyPage() {
               <Button
                 variant="contained"
                 size="small"
-                sx={{ mt: 1.5, bgcolor: '#1a2332', textTransform: 'none' }}
+                sx={{ mt: 1.5, bgcolor: 'var(--color-navy)', textTransform: 'none' }}
                 onClick={() => addRecipient.mutate(recipient)}
                 disabled={!recipient.recipient_name || !recipient.recipient_email || !isValidEmail(recipient.recipient_email) || config.recipients.some((r) => r.recipient_email.toLowerCase() === recipient.recipient_email.toLowerCase())}
               >
@@ -400,7 +400,7 @@ export function ConfigureSurveyPage() {
 
           {/* Access links */}
           <Paper elevation={2}>
-            <Box sx={{ p: 2, bgcolor: '#1a2332', borderRadius: '4px 4px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box sx={{ p: 2, bgcolor: 'var(--color-navy)', borderRadius: '4px 4px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>
                 Access Links ({config.access_links.length})
               </Typography>
@@ -409,7 +409,7 @@ export function ConfigureSurveyPage() {
                   <Button
                     size="small"
                     variant="contained"
-                    sx={{ bgcolor: '#c8102e', textTransform: 'none' }}
+                    sx={{ bgcolor: 'var(--color-primary)', textTransform: 'none' }}
                     onClick={() => generateLinks.mutate()}
                     disabled={config.recipients.length === 0}
                   >

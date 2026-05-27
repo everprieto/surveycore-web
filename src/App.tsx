@@ -45,8 +45,18 @@ const queryClient = new QueryClient({
 
 const theme = createTheme({
   palette: {
-    primary: { main: '#c8102e' },
-    secondary: { main: '#1a2332' },
+    primary: { main: '#000000' },
+    secondary: { main: '#1f2937' },
+    success: { main: '#374151' },
+    warning: { main: '#f59e0b' },
+    error: { main: '#ef4444' },
+    grey: {
+      500: '#6b7280',
+      700: '#d1d5db',
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, Arial, sans-serif',
   },
 });
 

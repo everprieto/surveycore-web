@@ -110,9 +110,9 @@ export function SurveyPreviewDialog({ surveyId, surveyType, language, open, onCl
       slotProps={{ paper: { sx: { maxHeight: '90vh' } } }}>
 
       {/* Header */}
-      <DialogTitle sx={{ bgcolor: '#1a2332', color: 'white', pr: 6, py: 2 }}>
+      <DialogTitle sx={{ bgcolor: 'var(--color-navy)', color: 'white', pr: 6, py: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <PreviewIcon sx={{ fontSize: 20, color: '#c8102e' }} />
+          <PreviewIcon sx={{ fontSize: 20, color: 'var(--color-primary)' }} />
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
               Survey Preview
@@ -151,13 +151,13 @@ export function SurveyPreviewDialog({ surveyId, surveyType, language, open, onCl
           <>
             {/* Survey header (same style as TakeSurveyPage) */}
             <Box sx={{ textAlign: 'center', mb: 4 }}>
-              <Typography variant="overline" sx={{ color: '#c8102e', letterSpacing: 3 }}>
+              <Typography variant="overline" sx={{ color: 'var(--color-primary)', letterSpacing: 3 }}>
                 Client Satisfaction Survey
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a2332', mt: 1 }}>
+              <Typography variant="h5" sx={{ fontWeight: 700, color: 'var(--color-navy)', mt: 1 }}>
                 We value your feedback
               </Typography>
-              <Box sx={{ width: 48, height: 3, bgcolor: '#c8102e', mx: 'auto', mt: 1.5 }} />
+              <Box sx={{ width: 48, height: 3, bgcolor: 'var(--color-primary)', mx: 'auto', mt: 1.5 }} />
             </Box>
 
             {data.questions.length === 0 && (
@@ -168,7 +168,7 @@ export function SurveyPreviewDialog({ surveyId, surveyType, language, open, onCl
             {data.questions.map((q, i) => (
               <Paper key={q.sq_id} elevation={2} sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#1a2332', lineHeight: 1.3, flexGrow: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--color-navy)', lineHeight: 1.3, flexGrow: 1 }}>
                     {i + 1}. {q.question_text}
                     {q.is_required && <span style={{ color: '#d32f2f', marginLeft: '4px' }}>*</span>}
                   </Typography>
@@ -186,7 +186,7 @@ export function SurveyPreviewDialog({ surveyId, surveyType, language, open, onCl
             {/* Mock submit */}
             <Box sx={{ textAlign: 'center', mt: 3 }}>
               <Button variant="contained" size="large" disabled
-                sx={{ bgcolor: '#c8102e', px: 6, textTransform: 'none', fontSize: '1rem', '&.Mui-disabled': { bgcolor: '#e5b3bc', color: 'white' } }}>
+                sx={{ bgcolor: 'var(--color-primary)', px: 6, textTransform: 'none', fontSize: '1rem', '&.Mui-disabled': { bgcolor: '#e5b3bc', color: 'white' } }}>
                 Submit Survey
               </Button>
               <Typography variant="caption" sx={{ display: 'block', mt: 1, color: 'text.secondary' }}>

@@ -173,13 +173,13 @@ export function TakeSurveyPage() {
       <Container maxWidth="md">
         {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 5 }}>
-          <Typography variant="overline" sx={{ color: '#c8102e', letterSpacing: 3 }}>
+          <Typography variant="overline" sx={{ color: 'var(--color-primary)', letterSpacing: 3 }}>
             Client Satisfaction Survey
           </Typography>
-          <Typography variant="h3" sx={{ fontWeight: 700, color: '#1a2332', mt: 1 }}>
+          <Typography variant="h3" sx={{ fontWeight: 700, color: 'var(--color-navy)', mt: 1 }}>
             We value your feedback
           </Typography>
-          <Box sx={{ width: 60, height: 4, bgcolor: '#c8102e', mx: 'auto', mt: 2 }} />
+          <Box sx={{ width: 60, height: 4, bgcolor: 'var(--color-primary)', mx: 'auto', mt: 2 }} />
         </Box>
 
         {submitError && <Alert severity="error" sx={{ mb: 3 }}>{submitError}</Alert>}
@@ -193,7 +193,7 @@ export function TakeSurveyPage() {
         <form onSubmit={(e) => { e.preventDefault(); if (canSubmit) submit.mutate(); }}>
           {data.questions.map((q, i) => (
             <Paper key={q.sq_id} elevation={2} sx={{ p: 3, mb: 3 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2, color: '#1a2332' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2, color: 'var(--color-navy)' }}>
                 {i + 1}. {q.question_text}
                 {q.is_required && <span style={{ color: '#d32f2f', marginLeft: '4px' }}>*</span>}
               </Typography>
@@ -211,7 +211,7 @@ export function TakeSurveyPage() {
               variant="contained"
               size="large"
               disabled={submit.isPending || !canSubmit}
-              sx={{ bgcolor: '#c8102e', px: 6, textTransform: 'none', fontSize: '1rem' }}
+              sx={{ bgcolor: 'var(--color-primary)', px: 6, textTransform: 'none', fontSize: '1rem' }}
             >
               {submit.isPending ? 'Submitting...' : 'Submit Survey'}
             </Button>

@@ -1,3 +1,64 @@
+/* Global CSS Variables — Tied to MUI Theme */
+:root {
+  /* Brand Colors — Negro y Grises */
+  --color-primary: #000000;           /* Negro puro para botones */
+  --color-primary-dark: #1f2937;      /* Gris oscuro para hover */
+  --color-primary-light: #f3f4f6;     /* Gris muy claro para hover bg */
+  --color-navy: #000000;              /* Negro para header/navbar */
+  --color-subnavy: #0f0f0f;
+  --color-grey: #6b7280;              /* Gris medio */
+  --color-grey-light: #d1d5db;        /* Gris claro (logo) */
+
+  /* Semantic Colors */
+  --color-success: #374151;           /* Gris oscuro para "completado" */
+  --color-warning: #f59e0b;           /* Amber para warnings */
+  --color-error: #ef4444;             /* Rojo para errores */
+
+  /* Text & Neutral */
+  --color-text-light: #ffffff;        /* Blanco sobre oscuro */
+  --color-text-dark: #111827;         /* Negro muy oscuro para texto */
+  --color-text-muted: #6b7280;        /* Gris medio para texto secundario */
+  --color-grey-lighter: #e5e7eb;      /* Gris para backgrounds */
+
+  /* Backgrounds & Borders */
+  --color-bg-primary: #ffffff;        /* Blanco */
+  --color-bg-dark: #1f2937;           /* Gris oscuro */
+  --color-border: rgba(0, 0, 0, 0.1); /* Bordes negros suave */
+
+  /* Backwards compatibility with existing App.css */
+  --accent: var(--color-primary);
+  --accent-bg: var(--color-primary-light);
+  --accent-border: var(--color-primary-dark);
+  --border: var(--color-border);
+  --text-h: var(--color-text-dark);
+  --social-bg: var(--color-grey-lighter);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  /* Menu Dropdown Colors */
+  --menu-bg: #f3f4f6;
+  --menu-text: #111827;
+  --menu-hover-bg: #e5e7eb;
+  --menu-hover-text: #000000;
+  --menu-selected-bg: #1f2937;
+  --menu-selected-text: #d1d5db;
+  --menu-selected-hover-bg: #111827;
+  --menu-selected-hover-text: #d1d5db;
+  --menu-border-radius: 8px;
+  --menu-padding: 10px 16px;
+  --menu-font-size: 0.875rem;
+  --menu-min-width: 200px;
+  --menu-margin-top: 8px;
+  --menu-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  /* Navbar Link Colors (Independent) */
+  --navbar-link-active: #f0fdf4;
+  --navbar-link-inactive: rgba(255, 255, 255, 0.85);
+  --navbar-logo-color: #000000;
+  --navbar-logout-color: #000000;
+  --navbar-drawer-selected-bg: #f0fdf4;
+  --navbar-drawer-selected-color: #000000;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }

@@ -86,7 +86,7 @@ export function CreateQuestionPage() {
 
   return (
     <PageWrapper maxWidth="sm">
-      <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332', mb: 3 }}>
+      <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-navy)', mb: 3 }}>
         {isEdit ? 'Edit Question' : 'Create Question'}
       </Typography>
 
@@ -161,7 +161,7 @@ export function CreateQuestionPage() {
               type="submit"
               variant="contained"
               disabled={loading}
-              sx={{ bgcolor: '#c8102e', textTransform: 'none' }}
+              sx={{ bgcolor: 'var(--color-primary)', textTransform: 'none' }}
             >
               {loading ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Question'}
             </Button>

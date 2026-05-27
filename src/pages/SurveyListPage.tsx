@@ -35,7 +35,7 @@ export function SurveyListPage() {
           <Typography variant="overline" color="text.secondary">
             {project.project_code} · {project.client_name}
           </Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332' }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-navy)' }}>
             {project.project_name} — Surveys
           </Typography>
         </Box>
@@ -48,7 +48,7 @@ export function SurveyListPage() {
         {canCreate && (
           <Button
             variant="contained"
-            sx={{ bgcolor: '#c8102e', textTransform: 'none' }}
+            sx={{ bgcolor: 'var(--color-primary)', textTransform: 'none' }}
             onClick={() => navigate(`/surveys/create?projectId=${id}`)}
           >
             + Create Survey
@@ -65,7 +65,7 @@ export function SurveyListPage() {
       {surveys && (
         <TableContainer component={Paper} elevation={2}>
           <Table>
-            <TableHead sx={{ bgcolor: '#1a2332' }}>
+            <TableHead sx={{ bgcolor: 'var(--color-navy)' }}>
               <TableRow>
                 {['#', 'Type', 'Language', 'Status', 'Planned Send', 'Responses', 'Actions'].map((h) => (
                   <TableCell key={h} sx={{ color: 'white', fontWeight: 600 }}>{h}</TableCell>
@@ -96,7 +96,7 @@ export function SurveyListPage() {
                         <Button
                           size="small"
                           variant="contained"
-                          sx={{ bgcolor: '#1a2332', textTransform: 'none' }}
+                          sx={{ bgcolor: 'var(--color-navy)', textTransform: 'none' }}
                           onClick={() => navigate(`/surveys/${s.survey_id}/configure`)}
                         >
                           Configure

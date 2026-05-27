@@ -90,7 +90,7 @@ function ProjectAdminTab() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332' }}>Projects</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-navy)' }}>Projects</Typography>
           {!loading && (
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.25 }}>
               {total.toLocaleString()} project{total !== 1 ? 's' : ''}
@@ -159,7 +159,7 @@ function ProjectAdminTab() {
       <Box sx={{ overflowX: 'auto' }}>
         <TableContainer component={Paper} elevation={2} sx={{ minWidth: 650 }}>
           <Table size="small">
-            <TableHead sx={{ bgcolor: '#1a2332' }}>
+            <TableHead sx={{ bgcolor: 'var(--color-navy)' }}>
               <TableRow>
                 {(
                   [
@@ -177,7 +177,7 @@ function ProjectAdminTab() {
                         color: 'white !important',
                         '& .MuiTableSortLabel-icon': { color: 'rgba(255,255,255,0.5) !important' },
                         '&.Mui-active': { color: 'white !important' },
-                        '&.Mui-active .MuiTableSortLabel-icon': { color: '#c8102e !important' },
+                        '&.Mui-active .MuiTableSortLabel-icon': { color: 'var(--color-primary) !important' },
                       }}
                     >
                       {label}
@@ -197,7 +197,7 @@ function ProjectAdminTab() {
                     sx={{
                       color: 'white !important',
                       '& .MuiTableSortLabel-icon': { color: 'rgba(255,255,255,0.5) !important' },
-                      '&.Mui-active .MuiTableSortLabel-icon': { color: '#c8102e !important' },
+                      '&.Mui-active .MuiTableSortLabel-icon': { color: 'var(--color-primary) !important' },
                     }}
                   >
                     Status
@@ -239,7 +239,7 @@ function ProjectAdminTab() {
                       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                         {canCreate && (
                           <Button size="small" variant="contained"
-                            sx={{ bgcolor: '#1a2332', textTransform: 'none', whiteSpace: 'nowrap' }}
+                            sx={{ bgcolor: 'var(--color-navy)', textTransform: 'none', whiteSpace: 'nowrap' }}
                             onClick={() => navigate(`/surveys/create?projectId=${project.id}`)}>
                             Create Survey
                           </Button>
@@ -354,7 +354,7 @@ function ProjectUsersTab() {
           Manage which users have access to which projects.
         </Typography>
         <Button variant="contained" startIcon={<AddIcon />}
-          sx={{ bgcolor: '#1a2332', textTransform: 'none' }}
+          sx={{ bgcolor: 'var(--color-navy)', textTransform: 'none' }}
           onClick={openCreate}>
           New Assignment
         </Button>
@@ -366,7 +366,7 @@ function ProjectUsersTab() {
       <Box sx={{ overflowX: 'auto' }}>
         <TableContainer component={Paper} elevation={2} sx={{ minWidth: 650 }}>
           <Table size="small">
-            <TableHead sx={{ bgcolor: '#1a2332' }}>
+            <TableHead sx={{ bgcolor: 'var(--color-navy)' }}>
               <TableRow>
                 {['User', 'Email', 'Project Code', 'Start Date', 'End Date', 'Actions'].map((h) => (
                   <TableCell key={h} sx={{ color: 'white', fontWeight: 700, whiteSpace: 'nowrap' }}>{h}</TableCell>
@@ -538,7 +538,7 @@ export function ProjectsPage() {
 
   return (
     <PageWrapper>
-      <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a2332', mb: 2 }}>
+      <Typography variant="h5" sx={{ fontWeight: 700, color: 'var(--color-navy)', mb: 2 }}>
         Projects
       </Typography>
 

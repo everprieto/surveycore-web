@@ -21,7 +21,7 @@ export function ImpersonationBanner() {
     <Box
       sx={{
         bgcolor: '#f59e0b',
-        color: '#1a2332',
+        color: 'var(--color-navy)',
         py: 0.75,
         px: { xs: 1.5, md: 3 },
         display: 'flex',
@@ -43,7 +43,7 @@ export function ImpersonationBanner() {
       <Chip
         label={`${user?.name} (${user?.role})`}
         size="small"
-        sx={{ bgcolor: '#1a2332', color: 'white', fontWeight: 700, fontSize: '0.7rem' }}
+        sx={{ bgcolor: 'var(--color-navy)', color: 'white', fontWeight: 700, fontSize: '0.7rem' }}
       />
 
       <Box sx={{ flexGrow: 1 }} />
@@ -60,7 +60,7 @@ export function ImpersonationBanner() {
         startIcon={<CloseIcon sx={{ fontSize: '0.9rem' }} />}
         onClick={handleStop}
         sx={{
-          bgcolor: '#1a2332',
+          bgcolor: 'var(--color-navy)',
           color: 'white',
           textTransform: 'none',
           fontSize: '0.78rem',
