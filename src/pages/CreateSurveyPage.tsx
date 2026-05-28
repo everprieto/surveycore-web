@@ -66,7 +66,7 @@ export function CreateSurveyPage() {
           {project.project_code} · {project.client_name}
         </Typography>
       )}
-      <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332', mb: 3 }}>
+      <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-navy)', mb: 3 }}>
         Create Survey{project ? ` for ${project.project_name}` : ''}
       </Typography>
 
@@ -129,7 +129,7 @@ export function CreateSurveyPage() {
               type="submit"
               variant="contained"
               disabled={loading}
-              sx={{ bgcolor: '#c8102e', textTransform: 'none' }}
+              sx={{ bgcolor: 'var(--color-primary)', textTransform: 'none' }}
             >
               {loading ? 'Creating...' : 'Create & Configure'}
             </Button>

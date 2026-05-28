@@ -40,7 +40,7 @@ export function SurveyResultsPage() {
   return (
     <PageWrapper>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332' }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-navy)' }}>
           Survey Results
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -62,7 +62,7 @@ export function SurveyResultsPage() {
           {/* KPI Strip */}
           <Box
             sx={{
-              bgcolor: '#1a2332', color: 'white', borderRadius: 2,
+              bgcolor: 'var(--color-navy)', color: 'white', borderRadius: 2,
               display: 'flex', p: { xs: 2, md: 3 }, gap: { xs: 3, md: 6 }, mb: 4, flexWrap: 'wrap',
             }}
           >
@@ -72,7 +72,7 @@ export function SurveyResultsPage() {
               { label: 'Response Rate', value: `${responseRate}%` },
             ].map(({ label, value }) => (
               <Box key={label}>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: '#c8102e' }}>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-primary)' }}>
                   {value}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>

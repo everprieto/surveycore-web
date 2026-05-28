@@ -36,7 +36,7 @@ export function HomePage() {
         <Box
           sx={{
             width: { xs: '100%', md: '35%' },
-            bgcolor: '#1a2332',
+            bgcolor: 'var(--color-subnavy)',
             color: 'white',
             p: 6,
             display: { xs: 'none', md: 'flex' },
@@ -44,13 +44,13 @@ export function HomePage() {
             justifyContent: 'center',
           }}
         >
-          <Typography variant="overline" sx={{ color: '#c8102e', letterSpacing: 3, mb: 2 }}>
+          <Typography variant="overline" sx={{ color: 'var(--color-text-light)', letterSpacing: 3, mb: 2 }}>
             GFT TECHNOLOGIES
           </Typography>
           <Typography variant="h3" sx={{ fontWeight: 700, mb: 2 }}>
             Survey Core
           </Typography>
-          <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.7)', lineHeight: 1.8 }}>
+          <Typography variant="body1" sx={{ color: 'var(--color-text-light)', lineHeight: 1.8 }}>
             Multi-language survey management platform. Design, distribute, and analyze
             client satisfaction surveys with ease.
           </Typography>
@@ -79,7 +79,7 @@ export function HomePage() {
             justifyContent: 'center',
           }}
         >
-          <Typography variant="h5" gutterBottom sx={{ mb: 4, color: '#1a2332', fontWeight: 600 }}>
+          <Typography variant="h5" gutterBottom sx={{ mb: 4, color: 'var(--color-navy)', fontWeight: 600 }}>
             What would you like to do?
           </Typography>
           <Grid container spacing={3}>
@@ -98,7 +98,7 @@ export function HomePage() {
                       <Typography variant="h2" sx={{ mb: 2 }}>
                         {mod.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#1a2332' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: 'var(--color-navy)' }}>
                         {mod.title}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">

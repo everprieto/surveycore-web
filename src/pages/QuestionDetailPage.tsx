@@ -79,7 +79,7 @@ export function QuestionDetailPage() {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Box>
           <Typography variant="overline" color="text.secondary">Question Library</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332' }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-navy)' }}>
             {question.logical_code}
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
@@ -99,7 +99,7 @@ export function QuestionDetailPage() {
               </Button>
               <Button
                 variant="contained"
-                sx={{ bgcolor: '#c8102e', textTransform: 'none' }}
+                sx={{ bgcolor: 'var(--color-primary)', textTransform: 'none' }}
                 onClick={() => publishMutation.mutate()}
                 disabled={publishMutation.isPending}
               >
@@ -119,7 +119,7 @@ export function QuestionDetailPage() {
         {/* Translations */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper elevation={2}>
-            <Box sx={{ p: 2, bgcolor: '#1a2332', borderRadius: '4px 4px 0 0' }}>
+            <Box sx={{ p: 2, bgcolor: 'var(--color-navy)', borderRadius: '4px 4px 0 0' }}>
               <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>
                 Translations
               </Typography>
@@ -203,7 +203,7 @@ export function QuestionDetailPage() {
                     <Button
                       variant="contained"
                       size="small"
-                      sx={{ bgcolor: '#1a2332', textTransform: 'none' }}
+                      sx={{ bgcolor: 'var(--color-navy)', textTransform: 'none' }}
                       onClick={() => addTranslation.mutate()}
                       disabled={!translationForm.question_text || addTranslation.isPending}
                     >
@@ -220,7 +220,7 @@ export function QuestionDetailPage() {
         {question.options.length > 0 && (
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper elevation={2}>
-              <Box sx={{ p: 2, bgcolor: '#1a2332', borderRadius: '4px 4px 0 0' }}>
+              <Box sx={{ p: 2, bgcolor: 'var(--color-navy)', borderRadius: '4px 4px 0 0' }}>
                 <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>
                   Options
                 </Typography>

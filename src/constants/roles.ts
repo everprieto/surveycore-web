@@ -1,9 +1,9 @@
 export const ROLE_COLORS: Record<string, string> = {
-  ADMIN:          '#c8102e',
-  SURVEY_MANAGER: '#2563eb',
-  BASIC:          '#059669',
-  READ_ONLY:      '#6b7280',
-  DEFAULT:        '#9333ea',
+  ADMIN:          '#000000',
+  SURVEY_MANAGER: '#1f2937',
+  BASIC:          '#6b7280',
+  READ_ONLY:      '#9ca3af',
+  DEFAULT:        '#6b7280',
 };
 
 export function roleColor(name: string): string {

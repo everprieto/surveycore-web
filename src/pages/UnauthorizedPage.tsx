@@ -6,7 +6,7 @@ export function UnauthorizedPage() {
   const navigate = useNavigate();
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', gap: 2, px: 2 }}>
-      <LockOutlinedIcon sx={{ fontSize: { xs: 48, md: 64 }, color: '#c8102e' }} />
+      <LockOutlinedIcon sx={{ fontSize: { xs: 48, md: 64 }, color: 'var(--color-primary)' }} />
       <Typography variant="h3" sx={{ fontWeight: 700, color: 'text.primary', fontSize: { xs: '2rem', md: '3rem' } }}>
         403
       </Typography>

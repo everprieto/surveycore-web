@@ -54,12 +54,12 @@ export function QuestionsPage() {
   return (
     <PageWrapper>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a2332' }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: 'var(--color-navy)' }}>
           Question Library
         </Typography>
         <Button
           variant="contained"
-          sx={{ bgcolor: '#c8102e', textTransform: 'none' }}
+          sx={{ bgcolor: 'var(--color-primary)', textTransform: 'none' }}
           onClick={() => navigate('/questions/create')}
         >
           + Create Question
@@ -134,7 +134,7 @@ export function QuestionsPage() {
 
           <TableContainer component={Paper} elevation={2}>
             <Table>
-              <TableHead sx={{ bgcolor: '#1a2332' }}>
+              <TableHead sx={{ bgcolor: 'var(--color-navy)' }}>
                 <TableRow>
                   {['Logical Code', 'Survey Type', 'Answer Type', 'Status', 'Translations', 'Options', 'Actions'].map((h) => (
                     <TableCell key={h} sx={{ color: 'white', fontWeight: 600 }}>{h}</TableCell>
@@ -182,7 +182,7 @@ export function QuestionsPage() {
                           <Button
                             size="small"
                             variant="contained"
-                            sx={{ bgcolor: '#c8102e', textTransform: 'none' }}
+                            sx={{ bgcolor: 'var(--color-primary)', textTransform: 'none' }}
                             onClick={() => publish.mutate(q.id)}
                             disabled={publish.isPending}
                           >
